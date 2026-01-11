@@ -101,13 +101,13 @@ class AnsiToWin32Test(TestCase):
     def assert_autoresets(self, convert, autoreset=True):
         stream = AnsiToWin32(Mock())
         stream.convert = convert
-        stream.reset_all = Mock()
+        stream.reset_console = Mock()
         stream.autoreset = autoreset
         stream.winterm = Mock()
 
         stream.write('abc')
 
-        self.assertEqual(stream.reset_all.called, autoreset)
+        self.assertEqual(stream.reset_console.called, autoreset)
 
     def testWriteAutoresets(self):
         self.assert_autoresets(convert=True)
@@ -174,7 +174,7 @@ class AnsiToWin32Test(TestCase):
         converter = AnsiToWin32(stream)
         stream.close()
 
-        converter.reset_all()
+        converter.reset_console()
 
     def test_wrap_shouldnt_raise_on_closed_orig_stdout(self):
         stream = StringIO()

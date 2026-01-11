@@ -11,3 +11,4 @@ virtualenv
 
 # PyCharm
 .idea
+open_api_key.txt
