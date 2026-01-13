@@ -138,10 +138,16 @@ def backup_project(project_dir: Path, backup_dir: Path) -> None:
     )
 
 def restore_project(backup_dir: Path, project_dir: Path) -> None:
-    """Stellt das Projekt aus dem Backup wieder her."""
-    if project_dir.exists():
-        shutil.rmtree(project_dir)
-    shutil.copytree(backup_dir, project_dir)
+    """Stellt das Projekt aus dem Backup wieder her, ohne vorhandene 'tests'/'test' zu löschen."""
+    backup_dir = backup_dir.resolve()
+    project_dir = project_dir.resolve()
+
+    if not backup_dir.exists():
+        raise FileNotFoundError(f"Backup-Verzeichnis nicht gefunden: {backup_dir}")
+
+    project_dir.mkdir(parents=True, exist_ok=True)
+    # Kopiert Inhalte ins bestehende Verzeichnis; alles, was nicht im Backup ist (z. B. tests/.git), bleibt bestehen
+    shutil.copytree(backup_dir, project_dir, dirs_exist_ok=True)
 
 def apply_changes(project_dir: Path, files: dict) -> None:
     """Wendet die Änderungen auf die Dateien an."""
