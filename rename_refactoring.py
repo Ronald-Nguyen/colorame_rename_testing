@@ -29,12 +29,14 @@ RENAME_PROMPT_TEMPLATE = """
 Projektstruktur:
 {project_structure}
     
-Deine Aufgabe besteht darin, eine Refactoring-Änderung für ein Python-Projekt vorzunehmen. Es sollen eine Methode umbenannt werden. Die Umbenennung muss konsistent im gesamten Projekt umgesetzt werden, indem jede Instanz der Nutzung angepasst wird.
+Deine Aufgabe besteht darin, eine Refactoring-Änderung für ein Python-Projekt vorzunehmen. Es soll eine Methode umbenannt werden. Die Umbenennung muss konsistent im gesamten Projekt umgesetzt werden, indem jede Instanz der Nutzung angepasst wird.
 
 Beachte:
-1. Der Code funktioniert nach der Umbenennung weiterhin korrekt.
+1. Der Code soll nach der Umbenennung noch perfekt funktionieren.
 2. Alle Importe und Funktionsaufrufe müssen ebenfalls angepasst werden.
 3. Der Stil und die Struktur des Codes sollte beibehalten werden.
+4. Gib für jede geänderte Datei den vollständigen Code zurück, um sicherzustellen, dass keine Änderungen übersehen werden.
+5. Die Semantik des Codes darf sich nicht ändern.
 
 Hier sind Beispiele für andere Umbenennungsaufgaben:
 Beispiel 1:
