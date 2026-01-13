@@ -210,7 +210,7 @@ def save_results(iteration: int, result_dir: Path, files: dict, test_result: dic
 def main():
     # HIER DEINEN PROMPT DEFINIEREN ODER LADEN
     YOUR_PROMPT = RENAME_PROMPT_TEMPLATE
-
+    test_result = run_pytest(PROJECT_DIR)
     print(f"{'='*60}\nStarte Refactoring-Experiment\n{'='*60}\n")
 
     backup_dir = Path("backup_original")
