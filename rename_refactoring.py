@@ -72,7 +72,7 @@ Gesamtes Projekt:
 
 
 Deine Aufgabe:
-1. Benenne folgende Funktion: `isatty` in der Datei: `ansitowin32.py` in `is_terminal` um.
+1. Benenne folgende Funktion: `reset_all` in der Datei: `ansitowin32.py` in `reset_console` um.
 2. Passe jede relevante Stelle im gesamten Projekt an.
 
 Ausgabe:

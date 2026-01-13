@@ -1,6 +1,6 @@
 Iteration 1
-Timestamp: 2026-01-13T23:07:12.252287
-Success: False
+Timestamp: 2026-01-13T23:10:49.101934
+Success: True
 
 ============================================================
 STDOUT:
@@ -32,12 +32,12 @@ tests\ansitowin32_test.py::AnsiToWin32Test::testWriteAndConvertCallsWin32WithPar
 tests\ansitowin32_test.py::AnsiToWin32Test::testWriteAndConvertSkipsEmptySnippets PASSED [ 30%]
 tests\ansitowin32_test.py::AnsiToWin32Test::testWriteAndConvertStripsAllValidAnsi PASSED [ 32%]
 tests\ansitowin32_test.py::AnsiToWin32Test::testWriteAndConvertWritesPlainText PASSED [ 34%]
-tests\ansitowin32_test.py::AnsiToWin32Test::testWriteAutoresets FAILED   [ 36%]
+tests\ansitowin32_test.py::AnsiToWin32Test::testWriteAutoresets PASSED   [ 36%]
 tests\ansitowin32_test.py::AnsiToWin32Test::testWriteDoesNotStripAnsi PASSED [ 38%]
 tests\ansitowin32_test.py::AnsiToWin32Test::testWriteStripsAnsi PASSED   [ 40%]
 tests\ansitowin32_test.py::AnsiToWin32Test::test_native_windows_ansi PASSED [ 42%]
 tests\ansitowin32_test.py::AnsiToWin32Test::test_osc_codes PASSED        [ 44%]
-tests\ansitowin32_test.py::AnsiToWin32Test::test_reset_all_shouldnt_raise_on_closed_orig_stdout FAILED [ 46%]
+tests\ansitowin32_test.py::AnsiToWin32Test::test_reset_all_shouldnt_raise_on_closed_orig_stdout PASSED [ 46%]
 tests\ansitowin32_test.py::AnsiToWin32Test::test_wrap_shouldnt_raise_on_closed_orig_stdout PASSED [ 48%]
 tests\ansitowin32_test.py::AnsiToWin32Test::test_wrap_shouldnt_raise_on_missing_closed_attr PASSED [ 50%]
 tests\initialise_test.py::InitTest::testAtexitRegisteredOnlyOnce SKIPPED [ 51%]
@@ -50,13 +50,13 @@ tests\initialise_test.py::InitTest::testInitDoesntWrapOnNonWindows SKIPPED [ 63%
 tests\initialise_test.py::InitTest::testInitWrapOffDoesntWrapOnWindows SKIPPED [ 65%]
 tests\initialise_test.py::InitTest::testInitWrapOffIncompatibleWithAutoresetOn SKIPPED [ 67%]
 tests\initialise_test.py::InitTest::testInitWrapsOnWindows SKIPPED (...) [ 69%]
-tests\initialise_test.py::JustFixWindowsConsoleTest::testJustFixWindowsConsole FAILED [ 71%]
+tests\initialise_test.py::JustFixWindowsConsoleTest::testJustFixWindowsConsole PASSED [ 71%]
 tests\isatty_test.py::IsattyTest::test_TTY PASSED                        [ 73%]
 tests\isatty_test.py::IsattyTest::test_nonTTY PASSED                     [ 75%]
-tests\isatty_test.py::IsattyTest::test_withPycharm FAILED                [ 76%]
+tests\isatty_test.py::IsattyTest::test_withPycharm PASSED                [ 76%]
 tests\isatty_test.py::IsattyTest::test_withPycharmNonTTYOverride PASSED  [ 78%]
-tests\isatty_test.py::IsattyTest::test_withPycharmNoneOverride FAILED    [ 80%]
-tests\isatty_test.py::IsattyTest::test_withPycharmStreamWrapped FAILED   [ 82%]
+tests\isatty_test.py::IsattyTest::test_withPycharmNoneOverride PASSED    [ 80%]
+tests\isatty_test.py::IsattyTest::test_withPycharmStreamWrapped PASSED   [ 82%]
 tests\isatty_test.py::IsattyTest::test_withPycharmTTYOverride PASSED     [ 84%]
 tests\winterm_test.py::WinTermTest::testBack PASSED                      [ 86%]
 tests\winterm_test.py::WinTermTest::testFore PASSED                      [ 88%]
@@ -67,49 +67,7 @@ tests\winterm_test.py::WinTermTest::testSetConsole PASSED                [ 96%]
 tests\winterm_test.py::WinTermTest::testSetConsoleOnStderr PASSED        [ 98%]
 tests\winterm_test.py::WinTermTest::testStyle PASSED                     [100%]
 
-================================== FAILURES ===================================
-_____________________ AnsiToWin32Test.testWriteAutoresets _____________________
-tests\ansitowin32_test.py:113: in testWriteAutoresets
-    self.assert_autoresets(convert=True)
-tests\ansitowin32_test.py:110: in assert_autoresets
-    self.assertEqual(stream.reset_console.called, autoreset)
-E   AssertionError: False != True
-_____ AnsiToWin32Test.test_reset_all_shouldnt_raise_on_closed_orig_stdout _____
-tests\ansitowin32_test.py:177: in test_reset_all_shouldnt_raise_on_closed_orig_stdout
-    converter.reset_console()
-    ^^^^^^^^^^^^^^^^^^^^^^^
-E   AttributeError: 'AnsiToWin32' object has no attribute 'reset_console'
-_____________ JustFixWindowsConsoleTest.testJustFixWindowsConsole _____________
-tests\initialise_test.py:159: in testJustFixWindowsConsole
-    self.assertIs(sys.stdout, prev_stdout)
-E   AssertionError: <colorama.ansitowin32.AnsiToWin32 object at 0x0000017D49A61910> is not <Mock id='1637618728112'>
-_________________________ IsattyTest.test_withPycharm _________________________
-tests\isatty_test.py:28: in test_withPycharm
-    self.assertTrue(is_a_tty(sys.stderr))
-E   AssertionError: False is not true
-___________________ IsattyTest.test_withPycharmNoneOverride ___________________
-tests\isatty_test.py:44: in test_withPycharmNoneOverride
-    self.assertFalse(is_a_tty(None))
-                     ^^^^^^^^^^^^^^
-tests\isatty_test.py:10: in is_a_tty
-    return StreamWrapper(stream, None).isatty()
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-ansitowin32.py:29: in __getattr__
-    return getattr(self.__wrapped, name)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E   AttributeError: 'NoneType' object has no attribute 'isatty'
-__________________ IsattyTest.test_withPycharmStreamWrapped ___________________
-tests\isatty_test.py:52: in test_withPycharmStreamWrapped
-    self.assertTrue(AnsiToWin32(sys.stdout).stream.isatty())
-E   AssertionError: False is not true
-=========================== short test summary info ===========================
-FAILED tests\ansitowin32_test.py::AnsiToWin32Test::testWriteAutoresets - Asse...
-FAILED tests\ansitowin32_test.py::AnsiToWin32Test::test_reset_all_shouldnt_raise_on_closed_orig_stdout
-FAILED tests\initialise_test.py::JustFixWindowsConsoleTest::testJustFixWindowsConsole
-FAILED tests\isatty_test.py::IsattyTest::test_withPycharm - AssertionError: F...
-FAILED tests\isatty_test.py::IsattyTest::test_withPycharmNoneOverride - Attri...
-FAILED tests\isatty_test.py::IsattyTest::test_withPycharmStreamWrapped - Asse...
-================== 6 failed, 36 passed, 10 skipped in 0.52s ===================
+======================= 42 passed, 10 skipped in 0.42s ========================
 
 ============================================================
 STDERR:

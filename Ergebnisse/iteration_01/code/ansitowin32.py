@@ -46,13 +46,13 @@ class StreamWrapper:
     def write(self, text):
         self.__convertor.write(text)
 
-    def is_terminal(self):
+    def isatty(self):
         stream = self.__wrapped
         if 'PYCHARM_HOSTED' in os.environ:
             if stream is not None and (stream is sys.__stdout__ or stream is sys.__stderr__):
                 return True
         try:
-            stream_isatty = stream.is_terminal
+            stream_isatty = stream.isatty
         except AttributeError:
             return False
         else:
@@ -99,7 +99,7 @@ class AnsiToWin32:
         except Exception:
             fd = -1
         system_has_native_ansi = not on_windows or enable_vt_processing(fd)
-        have_tty = not self.stream.closed and self.stream.is_terminal()
+        have_tty = not self.stream.closed and self.stream.isatty()
         need_conversion = conversion_supported and not system_has_native_ansi
 
         # should we strip ANSI sequences from our output?
@@ -179,10 +179,10 @@ class AnsiToWin32:
             self.wrapped.write(text)
             self.wrapped.flush()
         if self.autoreset:
-            self.reset_all()
+            self.reset_console()
 
 
-    def reset_all(self):
+    def reset_console(self):
         if self.convert:
             self.call_win32('m', (0,))
         elif not self.strip and not self.stream.closed:
