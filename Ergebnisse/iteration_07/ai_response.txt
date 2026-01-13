@@ -278,6 +278,7 @@ class AnsiToWin32:
     def flush(self):
         self.wrapped.flush()
 
+
 ```
 
 Datei `initialise.py`:
@@ -306,10 +307,10 @@ def _wipe_internal_state_for_tests():
     fixed_windows_console = False
 
     # no-op if it wasn't registered
-    atexit.unregister(reset_all)
+    atexit.unregister(reset_console)
 
 
-def reset_all():
+def reset_console():
     if AnsiToWin32 is not None:    # Issue #74: objects might become None at exit
         AnsiToWin32(orig_stdout).reset_console()
 
@@ -338,7 +339,7 @@ def init(autoreset=False, convert=None, strip=None, wrap=True):
 
     global atexit_done
     if not atexit_done:
-        atexit.register(reset_all)
+        atexit.register(reset_console)
         atexit_done = True
 
 
@@ -399,5 +400,6 @@ def wrap_stream(stream, convert, strip, autoreset, wrap):
 
 # Use this for initial setup as well, to reduce code duplication
 _wipe_internal_state_for_tests()
+
 
 ```

@@ -277,7 +277,6 @@ class AnsiToWin32:
 
     def flush(self):
         self.wrapped.flush()
-
 ```
 
 Datei `initialise.py`:
@@ -399,5 +398,4 @@ def wrap_stream(stream, convert, strip, autoreset, wrap):
 
 # Use this for initial setup as well, to reduce code duplication
 _wipe_internal_state_for_tests()
-
 ```

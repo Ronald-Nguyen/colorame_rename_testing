@@ -236,8 +236,8 @@ def main():
     successful_iterations = 0
     failed_iterations = 0
 
-    for i in range(1, 2):
-        print(f"\nITERATION {i}/1")
+    for i in range(1, 11):
+        print(f"\nITERATION {i}/10")
         restore_project(backup_dir, PROJECT_DIR)
 
         try:
