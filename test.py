@@ -146,6 +146,9 @@ def restore_project(backup_dir: Path, project_dir: Path) -> None:
 def apply_changes(project_dir: Path, files: dict) -> None:
     """Wendet die Änderungen auf die Dateien an."""
     for filename, code in files.items():
+        file_path = project_dir / filename.resolve()
+        if any(p in {'tests'} for p in file_path.relative_to(project_dir).parts):
+            continue
         file_path = project_dir / filename
         try:
             file_path.parent.mkdir(parents=True, exist_ok=True)
