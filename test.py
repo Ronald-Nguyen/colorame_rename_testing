@@ -89,14 +89,12 @@ def get_project_structure(project_dir: Path) -> str:
     """Erstellt eine Übersicht der Projektstruktur."""
     structure = []
     for root, dirs, files in os.walk(project_dir):
-        dirs[:] = [d for d in dirs if not d.startswith('.') and d != 'pycache']
+        dirs[:] = [d for d in dirs if not d.startswith('.') and d not in {'__pycache__', 'tests'}]
         level = root.replace(str(project_dir), '').count(os.sep)
         indent = ' ' * 2 * level
         structure.append(f'{indent}{os.path.basename(root)}/')
         subindent = ' ' * 2 * (level + 1)
         for file in files:
-            if "test" in file:
-                continue
             if file.endswith('.py'):
                 structure.append(f'{subindent}{file}')
     return '\n'.join(structure)
@@ -105,7 +103,7 @@ def get_all_python_files(project_dir: Path) -> str:
     """Liest alle Python-Dateien ein und liefert einen großen Textblock."""
     code_block = ""
     for root, dirs, files in os.walk(project_dir):
-        dirs[:] = [d for d in dirs if not d.startswith('.') and d != 'pycache']
+        dirs[:] = [d for d in dirs if not d.startswith('.') and d not in {'__pycache__', 'tests'}]
         for file in files:
             if "test" in file:
                 continue
@@ -136,7 +134,7 @@ def backup_project(project_dir: Path, backup_dir: Path) -> None:
         shutil.rmtree(backup_dir)
     shutil.copytree(
         project_dir, backup_dir, 
-        ignore=shutil.ignore_patterns('__pycache__', '*.pyc', '.git', 'test')
+        ignore=shutil.ignore_patterns('__pycache__', '*.pyc', '.git', 'test', 'tests')
     )
 
 def restore_project(backup_dir: Path, project_dir: Path) -> None:
