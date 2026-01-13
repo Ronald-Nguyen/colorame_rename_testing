@@ -26,8 +26,6 @@ RESULTS_DIR = Path("Ergebnisse")
 RESULTS_DIR.mkdir(exist_ok=True)
 # Prompt-Template für Rename
 RENAME_PROMPT_TEMPLATE = """
-Projektstruktur:
-{project_structure}
     
 Deine Aufgabe besteht darin, eine Refactoring-Änderung für ein Python-Projekt vorzunehmen. Es soll eine Methode umbenannt werden. Die Umbenennung muss konsistent im gesamten Projekt umgesetzt werden, indem jede Instanz der Nutzung angepasst wird.
 
@@ -68,9 +66,6 @@ def get_max(numbers):
 result = get_max([1, 2, 3])
 
 ---
-Gesamtes Projekt:
-{code_block}
-
 
 
 Deine Aufgabe:
@@ -235,6 +230,7 @@ def main():
     # Zusammenbau des finalen Prompts für die API
     final_prompt = f"{YOUR_PROMPT}\n\nStruktur:\n{project_structure}\n\nCode:\n{code_block}"
 
+    print(final_prompt)
     successful_iterations = 0
     failed_iterations = 0
 
