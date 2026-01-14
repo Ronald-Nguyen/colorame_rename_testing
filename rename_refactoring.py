@@ -167,7 +167,6 @@ def main():
 
     final_prompt = f"{YOUR_PROMPT}\n\nStruktur:\n{project_structure}\n\nCode:\n{code_block}"
 
-    print(final_prompt)
     successful_iterations = 0
     failed_iterations = 0
 
@@ -208,7 +207,7 @@ def main():
             print(f"Fehler: {e}")
             failed_iterations += 1
 
-    print(f"\nFertig. Erfolgsrate: {successful_iterations/1*100:.1f}%")
+    print(f"\nFertig. Erfolgsrate: {successful_iterations/10*100:.1f}%")
     restore_project(backup_dir, PROJECT_DIR)
 
 if __name__ == "__main__":
