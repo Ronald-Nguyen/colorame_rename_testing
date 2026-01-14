@@ -11,9 +11,9 @@ REFACTORING = 'rename'
 
 try:
     client = genai.Client()
-    print("✓ Gemini API Key aus Umgebungsvariable geladen")
+    print("Gemini API Key aus Umgebungsvariable geladen")
 except Exception as e:
-    print(f"✗ Fehler beim Laden des API-Keys: {e}")
+    print(f"Fehler beim Laden des API-Keys: {e}")
     exit(1)
 
 parser = argparse.ArgumentParser(description="Projektpfad angeben")
@@ -96,7 +96,6 @@ def apply_changes(project_dir: Path | str, files: dict[str, str]) -> None:
         file_rel = Path(filename)
 
         if any(part == 'tests' for part in file_rel.parts):
-            print(f" {filename} übersprungen (liegt im 'tests'-Ordner)")
             continue
 
         file_path = (project_dir / file_rel).resolve()
