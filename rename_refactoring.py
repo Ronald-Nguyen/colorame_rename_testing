@@ -7,80 +7,23 @@ from pathlib import Path
 from datetime import datetime
 from google import genai
 
-# --- Konfiguration & API-Client ---
+REFACTORING = 'rename'
+
 try:
-    # Initialisiert den Client (erwartet GOOGLE_API_KEY in den Umgebungsvariablen)
     client = genai.Client()
     print("✓ Gemini API Key aus Umgebungsvariable geladen")
 except Exception as e:
     print(f"✗ Fehler beim Laden des API-Keys: {e}")
     exit(1)
 
-# --- Argumente ---
 parser = argparse.ArgumentParser(description="Projektpfad angeben")
 parser.add_argument("--project-path", type=str, default="colorama", help="Pfad des Projekts")
 args = parser.parse_args()
 
 PROJECT_DIR = Path(args.project_path)
-RESULTS_DIR = Path("Ergebnisse")
+PROMPT_TEMPLATE = Path(f"{REFACTORING}.txt").read_text(encoding='utf-8')
+RESULTS_DIR = Path(REFACTORING + "_results")
 RESULTS_DIR.mkdir(exist_ok=True)
-# Prompt-Template für Rename
-RENAME_PROMPT_TEMPLATE = """
-    
-Deine Aufgabe besteht darin, eine Refactoring-Änderung für ein Python-Projekt vorzunehmen. Es soll eine Methode umbenannt werden. Die Umbenennung muss konsistent im gesamten Projekt umgesetzt werden, indem jede Instanz der Nutzung angepasst wird.
-
-Beachte:
-1. Der Code soll nach der Umbenennung noch perfekt funktionieren.
-2. Alle Importe und Funktionsaufrufe müssen ebenfalls angepasst werden.
-3. Der Stil und die Struktur des Codes sollte beibehalten werden.
-4. Gib für jede geänderte Datei den vollständigen Code zurück, um sicherzustellen, dass keine Änderungen übersehen werden.
-5. Die Semantik des Codes darf sich nicht ändern.
-
-Hier sind Beispiele für andere Umbenennungsaufgaben:
-Beispiel 1:
-Original Code:
-def calculate_sum(a, b):
-    return a + b
-
-print(calculate_sum(2, 3))
-
-Nach der Umbenennung zu `add`:
-def add(a, b):
-    return a + b
-
-print(add(2, 3))
-
----
-
-Beispiel 2:
-Original Code:
-def find_maximum(numbers):
-    return max(numbers)
-
-result = find_maximum([1, 2, 3])
-
-Nach der Umbenennung zu `get_max`:
-def get_max(numbers):
-    return max(numbers)
-
-result = get_max([1, 2, 3])
-
----
-
-
-Deine Aufgabe:
-1. Benenne folgende Funktion: `reset_all` in der Datei: `ansitowin32.py` in `reset_console` um.
-2. Passe jede relevante Stelle im gesamten Projekt an.
-
-Ausgabe:
-Antworte für JEDE geänderte Datei exakt in diesem Format: 
-
-Datei `dateiname.py`:
-```python
-[Vollständiger Code der Datei]
-"""
-
-# --- Hilfsfunktionen ---
 
 def get_project_structure(project_dir: Path) -> str:
     """Erstellt eine Übersicht der Projektstruktur."""
@@ -143,7 +86,6 @@ def restore_project(backup_dir: Path, project_dir: Path) -> None:
         raise FileNotFoundError(f"Backup-Verzeichnis nicht gefunden: {backup_dir}")
 
     project_dir.mkdir(parents=True, exist_ok=True)
-    # Kopiert Inhalte ins bestehende Verzeichnis; alles, was nicht im Backup ist (z. B. tests/.git), bleibt bestehen
     shutil.copytree(backup_dir, project_dir, dirs_exist_ok=True)
 
 def apply_changes(project_dir: Path | str, files: dict[str, str]) -> None:
@@ -153,25 +95,23 @@ def apply_changes(project_dir: Path | str, files: dict[str, str]) -> None:
     for filename, code in files.items():
         file_rel = Path(filename)
 
-        # Irgendein Pfadteil ist 'tests'? -> überspringen
         if any(part == 'tests' for part in file_rel.parts):
-            print(f" ⤬ {filename} übersprungen (liegt im 'tests'-Ordner)")
+            print(f" {filename} übersprungen (liegt im 'tests'-Ordner)")
             continue
 
-        # Zielpfad bilden und absichern, dass er im Projekt liegt
         file_path = (project_dir / file_rel).resolve()
         try:
             file_path.relative_to(project_dir)
         except ValueError:
-            print(f" ⚠ {filename} liegt außerhalb von {project_dir}, übersprungen")
+            print(f" {filename} liegt außerhalb von {project_dir}, übersprungen")
             continue
 
         try:
             file_path.parent.mkdir(parents=True, exist_ok=True)
             file_path.write_text(code, encoding='utf-8')
-            print(f" ✓ {filename} aktualisiert")
+            print(f" {filename} aktualisiert")
         except Exception as e:
-            print(f" ✗ Fehler beim Schreiben von {filename}: {e}")
+            print(f" Fehler beim Schreiben von {filename}: {e}")
 
 def run_pytest(project_dir: Path) -> dict:
     """Führt pytest aus und gibt das Ergebnis zurück."""
@@ -214,11 +154,9 @@ def save_results(iteration: int, result_dir: Path, files: dict, test_result: dic
     with open(result_dir / "ai_response.txt", 'w', encoding='utf-8') as f:
         f.write(response_text)
 
-# --- Hauptprogramm ---
 
 def main():
-    # HIER DEINEN PROMPT DEFINIEREN ODER LADEN
-    YOUR_PROMPT = RENAME_PROMPT_TEMPLATE
+    YOUR_PROMPT = PROMPT_TEMPLATE
     print(f"{'='*60}\nStarte Refactoring-Experiment\n{'='*60}\n")
 
     backup_dir = Path("backup_original")
@@ -227,7 +165,6 @@ def main():
     project_structure = get_project_structure(PROJECT_DIR)
     code_block = get_all_python_files(PROJECT_DIR)
 
-    # Zusammenbau des finalen Prompts für die API
     final_prompt = f"{YOUR_PROMPT}\n\nStruktur:\n{project_structure}\n\nCode:\n{code_block}"
 
     print(final_prompt)

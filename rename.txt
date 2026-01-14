@@ -1,0 +1,51 @@
+Deine Aufgabe besteht darin, eine Refactoring-Änderung für ein Python-Projekt vorzunehmen. Es soll eine Methode umbenannt werden. Die Umbenennung muss konsistent im gesamten Projekt umgesetzt werden, indem jede Instanz der Nutzung angepasst wird.
+
+Beachte:
+1. Der Code soll nach der Umbenennung noch perfekt funktionieren.
+2. Alle Importe und Funktionsaufrufe müssen ebenfalls angepasst werden.
+3. Der Stil und die Struktur des Codes sollte beibehalten werden.
+4. Gib für jede geänderte Datei den vollständigen Code zurück, um sicherzustellen, dass keine Änderungen übersehen werden.
+5. Die Semantik des Codes darf sich nicht ändern.
+
+Hier sind Beispiele für andere Umbenennungsaufgaben:
+Beispiel 1:
+Original Code:
+def calculate_sum(a, b):
+    return a + b
+
+print(calculate_sum(2, 3))
+
+Nach der Umbenennung zu `add`:
+def add(a, b):
+    return a + b
+
+print(add(2, 3))
+
+---
+
+Beispiel 2:
+Original Code:
+def find_maximum(numbers):
+    return max(numbers)
+
+result = find_maximum([1, 2, 3])
+
+Nach der Umbenennung zu `get_max`:
+def get_max(numbers):
+    return max(numbers)
+
+result = get_max([1, 2, 3])
+
+---
+
+
+Deine Aufgabe:
+1. Benenne folgende Funktion: `reset_all` in der Datei: `ansitowin32.py` in `reset_console` um.
+2. Passe jede relevante Stelle im gesamten Projekt an.
+
+Ausgabe:
+Antworte für JEDE geänderte Datei exakt in diesem Format: 
+
+Datei `dateiname.py`:
+```python
+[Vollständiger Code der Datei]
