@@ -78,7 +78,7 @@ def backup_project(project_dir: Path, backup_dir: Path) -> None:
     )
 
 def restore_project(backup_dir: Path, project_dir: Path) -> None:
-    """Stellt das Projekt aus dem Backup wieder her, ohne vorhandene 'tests'/'test' zu löschen."""
+    """Stellt das Projekt aus dem Backup wieder her"""
     backup_dir = Path(backup_dir).resolve()
     project_dir = Path(project_dir).resolve()
 
