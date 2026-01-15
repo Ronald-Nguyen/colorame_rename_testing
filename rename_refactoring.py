@@ -149,6 +149,14 @@ def save_results(iteration: int, result_dir: Path, files: dict, test_result: dic
     with open(result_dir / "ai_response.txt", 'w', encoding='utf-8') as f:
         f.write(response_text)
 
+    with open(result_dir / "summary.txt", 'w', encoding='utf-8') as f:
+        f.write(f"Iteration {iteration} Summary\n")
+        f.write(f"Timestamp: {datetime.now().isoformat()}\n")
+        f.write(f"Number of files changed: {len(files)}\n")
+        f.write(f"Tests passed: {test_result['success']}\n")
+
+    
+
 
 def main():
     YOUR_PROMPT = PROMPT_TEMPLATE
@@ -193,8 +201,10 @@ def main():
 
             if test_result['success']:
                 successful_iterations += 1
+                print("Tests bestanden.")
             else:
                 failed_iterations += 1
+                print("Tests fehlgeschlagen.")
 
             save_results(i, RESULTS_DIR / f"iteration_{i:02d}", files, test_result, response_text)
 

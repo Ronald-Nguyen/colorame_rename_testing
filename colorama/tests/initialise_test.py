@@ -4,7 +4,7 @@ from unittest import TestCase, main, skipUnless
 from unittest.mock import patch, Mock
 
 from ..ansitowin32 import StreamWrapper
-from ..initialise import init, just_fix_windows_console, _wipe_internal_state_for_tests
+from ..initialise import init, just_fix_windows_console, _wipe_internal_state_for_tests, reset_all
 from .utils import osname, replace_by
 
 orig_stdout = sys.stdout

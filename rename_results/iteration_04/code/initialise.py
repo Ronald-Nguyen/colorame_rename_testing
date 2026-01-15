@@ -25,7 +25,7 @@ def _wipe_internal_state_for_tests():
 
 def reset_all():
     if AnsiToWin32 is not None:
-        AnsiToWin32(orig_stdout).reset_console()
+        AnsiToWin32(orig_stdout).reset_all()
 
 
 def init(autoreset=False, convert=None, strip=None, wrap=True):
