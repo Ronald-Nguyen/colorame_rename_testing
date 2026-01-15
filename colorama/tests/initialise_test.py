@@ -183,3 +183,24 @@ class JustFixWindowsConsoleTest(TestCase):
 
 if __name__ == '__main__':
     main()
+
+class ResetAllTest(TestCase):
+    def tearDown(self):
+        _wipe_internal_state_for_tests()
+
+    @patch('colorama.initialise.AnsiToWin32')
+    def test_reset_all_calls_reset_console_with_original_stdout(self, mockATW32):
+        prev_stdout = sys.stdout
+
+        _wipe_internal_state_for_tests()
+        init()
+
+        mockATW32.reset_mock()
+
+        reset_all()
+
+        self.assertTrue(mockATW32.called, 'AnsiToWin32 should be constructed')
+        constructed_stream = mockATW32.call_args_list[0][0][0]
+        self.assertIs(constructed_stream, prev_stdout, 'reset_all must use original stdout')
+        self.assertTrue(mockATW32.return_value.reset_console.called, 'reset_console should be called')
+
