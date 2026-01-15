@@ -8,6 +8,7 @@ from datetime import datetime
 from google import genai
 
 REFACTORING = 'rename'
+PATH = 'colorama'
 
 try:
     client = genai.Client()
@@ -17,7 +18,7 @@ except Exception as e:
     exit(1)
 
 parser = argparse.ArgumentParser(description="Projektpfad angeben")
-parser.add_argument("--project-path", type=str, default="colorama", help="Pfad des Projekts")
+parser.add_argument("--project-path", type=str, default=PATH, help="Pfad des Projekts")
 args = parser.parse_args()
 
 PROJECT_DIR = Path(args.project_path)
@@ -74,7 +75,7 @@ def backup_project(project_dir: Path, backup_dir: Path) -> None:
         shutil.rmtree(backup_dir)
     shutil.copytree(
         project_dir, backup_dir, 
-        ignore=shutil.ignore_patterns('__pycache__', '*.pyc', '.git', 'test', 'tests')
+        ignore=shutil.ignore_patterns('__pycache__', '*.pyc', '.git', 'test', 'tests', 'pluggy.egg-info')
     )
 
 def restore_project(backup_dir: Path, project_dir: Path) -> None:
@@ -140,7 +141,11 @@ def save_results(iteration: int, result_dir: Path, files: dict, test_result: dic
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(code)
 
-    with open(result_dir / "test_result.txt", 'w', encoding='utf-8') as f:
+    if(test_result['success']):
+        status = "success_"
+    else:
+        status = "failure_"
+    with open(result_dir / f"{status}test_result.txt", 'w', encoding='utf-8') as f:
         f.write(f"Iteration {iteration}\nTimestamp: {datetime.now().isoformat()}\n")
         f.write(f"Success: {test_result['success']}\n")
         f.write("\n" + "="*60 + "\nSTDOUT:\n" + test_result['stdout'])
@@ -148,12 +153,6 @@ def save_results(iteration: int, result_dir: Path, files: dict, test_result: dic
 
     with open(result_dir / "ai_response.txt", 'w', encoding='utf-8') as f:
         f.write(response_text)
-
-    with open(result_dir / "summary.txt", 'w', encoding='utf-8') as f:
-        f.write(f"Iteration {iteration} Summary\n")
-        f.write(f"Timestamp: {datetime.now().isoformat()}\n")
-        f.write(f"Number of files changed: {len(files)}\n")
-        f.write(f"Tests passed: {test_result['success']}\n")
 
     
 
