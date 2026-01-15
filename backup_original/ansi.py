@@ -1,8 +1,3 @@
-# Copyright Jonathan Hartley 2013. BSD 3-Clause license, see LICENSE file.
-'''
-This module generates ANSI character codes to printing colors to terminals.
-See: http://en.wikipedia.org/wiki/ANSI_escape_code
-'''
 
 CSI = '\033['
 OSC = '\033]'
@@ -24,9 +19,6 @@ def clear_line(mode=2):
 
 class AnsiCodes:
     def __init__(self):
-        # the subclasses declare class attributes which are numbers.
-        # Upon instantiation we define instance attributes, which are the same
-        # as the class attributes but wrapped with the ANSI escape sequence
         for name in dir(self):
             if not name.startswith('_'):
                 value = getattr(self, name)
@@ -57,7 +49,6 @@ class AnsiFore(AnsiCodes):
     WHITE           = 37
     RESET           = 39
 
-    # These are fairly well supported, but not part of the standard.
     LIGHTBLACK_EX   = 90
     LIGHTRED_EX     = 91
     LIGHTGREEN_EX   = 92
@@ -79,7 +70,6 @@ class AnsiBack(AnsiCodes):
     WHITE           = 47
     RESET           = 49
 
-    # These are fairly well supported, but not part of the standard.
     LIGHTBLACK_EX   = 100
     LIGHTRED_EX     = 101
     LIGHTGREEN_EX   = 102
