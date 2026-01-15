@@ -1,6 +1,4 @@
-# Copyright Jonathan Hartley 2013. BSD 3-Clause license, see LICENSE file.
 
-# from winbase.h
 STDOUT = -11
 STDERR = -12
 
@@ -21,7 +19,7 @@ else:
     COORD = wintypes._COORD
 
     class CONSOLE_SCREEN_BUFFER_INFO(Structure):
-        """struct in wincon.h."""
+
         _fields_ = [
             ("dwSize", COORD),
             ("dwCursorPosition", COORD),
@@ -128,19 +126,13 @@ else:
 
     def SetConsoleCursorPosition(stream_id, position, adjust=True):
         position = COORD(*position)
-        # If the position is out of range, do nothing.
         if position.Y <= 0 or position.X <= 0:
             return
-        # Adjust for Windows' SetConsoleCursorPosition:
-        #    1. being 0-based, while ANSI is 1-based.
-        #    2. expecting (x,y), while ANSI uses (y,x).
         adjusted_position = COORD(position.Y - 1, position.X - 1)
         if adjust:
-            # Adjust for viewport's scroll position
             sr = GetConsoleScreenBufferInfo(STDOUT).srWindow
             adjusted_position.Y += sr.Top
             adjusted_position.X += sr.Left
-        # Resume normal processing
         handle = _GetStdHandle(stream_id)
         return _SetConsoleCursorPosition(handle, adjusted_position)
 
@@ -149,18 +141,16 @@ else:
         char = c_char(char.encode())
         length = wintypes.DWORD(length)
         num_written = wintypes.DWORD(0)
-        # Note that this is hard-coded for ANSI (vs wide) bytes.
         success = _FillConsoleOutputCharacterA(
             handle, char, length, start, byref(num_written))
         return num_written.value
 
     def FillConsoleOutputAttribute(stream_id, attr, length, start):
-        ''' FillConsoleOutputAttribute( hConsole, csbi.wAttributes, dwConSize, coordScreen, &cCharsWritten )'''
+
         handle = _GetStdHandle(stream_id)
         attribute = wintypes.WORD(attr)
         length = wintypes.DWORD(length)
         num_written = wintypes.DWORD(0)
-        # Note that this is hard-coded for ANSI (vs wide) bytes.
         return _FillConsoleOutputAttribute(
             handle, attribute, length, start, byref(num_written))
 

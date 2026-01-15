@@ -1,4 +1,3 @@
-# Copyright Jonathan Hartley 2013. BSD 3-Clause license, see LICENSE file.
 try:
     from msvcrt import get_osfhandle
 except ImportError:
@@ -8,7 +7,6 @@ except ImportError:
 
 from . import win32
 
-# from wincon.h
 class WinColor:
     BLACK   = 0
     BLUE    = 1
@@ -19,11 +17,10 @@ class WinColor:
     YELLOW  = 6
     GREY    = 7
 
-# from wincon.h
 class WinStyle:
-    NORMAL              = 0x00 # dim text, dim background
-    BRIGHT              = 0x08 # bright text, dim background
-    BRIGHT_BACKGROUND   = 0x80 # dim text, bright background
+    NORMAL              = 0x00
+    BRIGHT              = 0x08
+    BRIGHT_BACKGROUND   = 0x80
 
 class WinTerm:
 
@@ -33,10 +30,6 @@ class WinTerm:
         self._default_fore = self._fore
         self._default_back = self._back
         self._default_style = self._style
-        # In order to emulate LIGHT_EX in windows, we borrow the BRIGHT style.
-        # So that LIGHT_EX colors and BRIGHT style do not clobber each other,
-        # we track them separately, since LIGHT_EX is overwritten by Fore/Back
-        # and BRIGHT is overwritten by Style codes.
         self._light = 0
 
     def get_attrs(self):
@@ -56,7 +49,6 @@ class WinTerm:
         if fore is None:
             fore = self._default_fore
         self._fore = fore
-        # Emulate LIGHT_EX with BRIGHT Style
         if light:
             self._light |= WinStyle.BRIGHT
         else:
@@ -67,7 +59,6 @@ class WinTerm:
         if back is None:
             back = self._default_back
         self._back = back
-        # Emulate LIGHT_EX with BRIGHT_BACKGROUND Style
         if light:
             self._light |= WinStyle.BRIGHT_BACKGROUND
         else:
@@ -90,16 +81,12 @@ class WinTerm:
 
     def get_position(self, handle):
         position = win32.GetConsoleScreenBufferInfo(handle).dwCursorPosition
-        # Because Windows coordinates are 0-based,
-        # and win32.SetConsoleCursorPosition expects 1-based.
         position.X += 1
         position.Y += 1
         return position
 
     def set_cursor_position(self, position=None, on_stderr=False):
         if position is None:
-            # I'm not currently tracking the position, so there is no default.
-            # position = self.get_position()
             return
         handle = win32.STDOUT
         if on_stderr:
@@ -115,16 +102,11 @@ class WinTerm:
         win32.SetConsoleCursorPosition(handle, adjusted_position, adjust=False)
 
     def erase_screen(self, mode=0, on_stderr=False):
-        # 0 should clear from the cursor to the end of the screen.
-        # 1 should clear from the cursor to the beginning of the screen.
-        # 2 should clear the entire screen, and move cursor to (1,1)
         handle = win32.STDOUT
         if on_stderr:
             handle = win32.STDERR
         csbi = win32.GetConsoleScreenBufferInfo(handle)
-        # get the number of character cells in the current buffer
         cells_in_screen = csbi.dwSize.X * csbi.dwSize.Y
-        # get number of character cells before current cursor position
         cells_before_cursor = csbi.dwSize.X * csbi.dwCursorPosition.Y + csbi.dwCursorPosition.X
         if mode == 0:
             from_coord = csbi.dwCursorPosition
@@ -136,20 +118,13 @@ class WinTerm:
             from_coord = win32.COORD(0, 0)
             cells_to_erase = cells_in_screen
         else:
-            # invalid mode
             return
-        # fill the entire screen with blanks
         win32.FillConsoleOutputCharacter(handle, ' ', cells_to_erase, from_coord)
-        # now set the buffer's attributes accordingly
         win32.FillConsoleOutputAttribute(handle, self.get_attrs(), cells_to_erase, from_coord)
         if mode == 2:
-            # put the cursor where needed
             win32.SetConsoleCursorPosition(handle, (1, 1))
 
     def erase_line(self, mode=0, on_stderr=False):
-        # 0 should clear from the cursor to the end of the line.
-        # 1 should clear from the cursor to the beginning of the line.
-        # 2 should clear the entire line.
         handle = win32.STDOUT
         if on_stderr:
             handle = win32.STDERR
@@ -164,11 +139,8 @@ class WinTerm:
             from_coord = win32.COORD(0, csbi.dwCursorPosition.Y)
             cells_to_erase = csbi.dwSize.X
         else:
-            # invalid mode
             return
-        # fill the entire screen with blanks
         win32.FillConsoleOutputCharacter(handle, ' ', cells_to_erase, from_coord)
-        # now set the buffer's attributes accordingly
         win32.FillConsoleOutputAttribute(handle, self.get_attrs(), cells_to_erase, from_coord)
 
     def set_title(self, title):
@@ -190,6 +162,5 @@ def enable_vt_processing(fd):
         mode = win32.GetConsoleMode(handle)
         if mode & win32.ENABLE_VIRTUAL_TERMINAL_PROCESSING:
             return True
-    # Can get TypeError in testsuite where 'fd' is a Mock() and IOError in python2.7
     except (OSError, TypeError):
         return False
