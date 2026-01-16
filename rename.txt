@@ -1,51 +1,88 @@
-Deine Aufgabe besteht darin, eine Refactoring-Änderung für ein Python-Projekt vorzunehmen. Es soll eine Methode umbenannt werden. Die Umbenennung muss konsistent im gesamten Projekt umgesetzt werden, indem jede Instanz der Nutzung angepasst wird.
+Task Description
 
-Beachte:
-1. Der Code soll nach der Umbenennung noch perfekt funktionieren.
-2. Alle Importe und Funktionsaufrufe müssen ebenfalls angepasst werden.
-3. Der Stil und die Struktur des Codes sollte beibehalten werden.
-4. Gib für jede geänderte Datei den vollständigen Code zurück, um sicherzustellen, dass keine Änderungen übersehen werden.
-5. Die Semantik des Codes darf sich nicht ändern.
+Your task is to perform a refactoring change in a Python project. A function needs to be renamed.
+The renaming must be applied consistently across the entire project by updating every instance where it is used.
 
-Hier sind Beispiele für andere Umbenennungsaufgaben:
-Beispiel 1:
+Please note:
+1. The code must still function perfectly after the renaming.
+2. All imports, references, and function calls must be updated accordingly.
+3. The style, formatting, and structure of the code must be preserved.
+4. Do not introduce any new functionality, logic changes, or unrelated formatting changes.
+5. For every modified file, return the complete updated file content to ensure that no changes are overlooked.
+6. The semantics and behavior of the code must not change.
+7. Only include files that required changes due to the renaming.
+
+This includes (if applicable):
+- Imports
+- Function calls
+- Type hints
+- Decorators
+- References inside docstrings or comments that explicitly refer to the renamed function
+
+Do not resolve naming conflicts automatically. If a conflict would occur, report it instead.
+
+---
+
+Examples of renaming tasks:
+
+Example 1:
+
 Original Code:
 def calculate_sum(a, b):
     return a + b
 
 print(calculate_sum(2, 3))
 
-Nach der Umbenennung zu `add`:
+Task:
+1. Rename the function `calculate_sum` to `add`.
+2. Update every relevant occurrence across the entire project.
+
+Output format (for EACH modified file):
+
+File `filename.py`:
+```python
 def add(a, b):
     return a + b
 
 print(add(2, 3))
+```
 
----
+Example 2:
 
-Beispiel 2:
 Original Code:
 def find_maximum(numbers):
-    return max(numbers)
+return max(numbers)
 
 result = find_maximum([1, 2, 3])
 
-Nach der Umbenennung zu `get_max`:
+Task:
+
+Rename the function find_maximum to get_max.
+
+Update every relevant occurrence across the entire project.
+
+Output format (for EACH modified file):
+
+File filename.py:
+```python
 def get_max(numbers):
     return max(numbers)
 
 result = get_max([1, 2, 3])
 
----
+```
 
+Your Task:
 
-Deine Aufgabe:
-1. Benenne folgende Funktion: `reset_all` in der Datei: `ansitowin32.py` in `reset_console` um.
-2. Passe jede relevante Stelle im gesamten Projekt an.
+Rename the function reset_all in the file ansitowin32.py to reset_console.
 
-Ausgabe:
-Antworte für JEDE geänderte Datei exakt in diesem Format: 
+Update every relevant occurrence across the entire project.
 
-Datei `dateiname.py`:
+Output:
+
+For EACH modified file, respond exactly in the following format:
+
+File filename.py:
 ```python
-[Vollständiger Code der Datei]
+[Complete updated file content]
+```
