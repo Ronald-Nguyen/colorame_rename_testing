@@ -20,10 +20,10 @@ def _wipe_internal_state_for_tests():
     global fixed_windows_console
     fixed_windows_console = False
 
-    atexit.unregister(reset_all)
+    atexit.unregister(reset_console)
 
 
-def reset_all():
+def reset_console():
     if AnsiToWin32 is not None:
         AnsiToWin32(orig_stdout).reset_console()
 
@@ -52,7 +52,7 @@ def init(autoreset=False, convert=None, strip=None, wrap=True):
 
     global atexit_done
     if not atexit_done:
-        atexit.register(reset_all)
+        atexit.register(reset_console)
         atexit_done = True
 
 

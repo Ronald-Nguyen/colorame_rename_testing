@@ -98,7 +98,7 @@ class AnsiToWin32:
     def get_win32_calls(self):
         if self.convert and winterm:
             return {
-                AnsiStyle.RESET_ALL: (winterm.reset_all, ),
+                AnsiStyle.RESET_ALL: (winterm.reset_console, ),
                 AnsiStyle.BRIGHT: (winterm.style, WinStyle.BRIGHT),
                 AnsiStyle.DIM: (winterm.style, WinStyle.NORMAL),
                 AnsiStyle.NORMAL: (winterm.style, WinStyle.NORMAL),

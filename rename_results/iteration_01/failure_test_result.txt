@@ -1,0 +1,32 @@
+Iteration 1
+Timestamp: 2026-01-16T14:49:40.885481
+Success: False
+
+============================================================
+STDOUT:
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.0.2, pluggy-0.1.dev919+g0f099630a
+benchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+rootdir: C:\Users\ronal\colorame_rename_testing
+configfile: pyproject.toml
+plugins: anyio-4.12.1, hypothesis-6.148.8, benchmark-5.2.3, cov-7.0.0
+collected 41 items / 1 error
+
+=================================== ERRORS ====================================
+_____________ ERROR collecting colorama/tests/initialise_test.py ______________
+ImportError while importing test module 'C:\Users\ronal\colorame_rename_testing\colorama\tests\initialise_test.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\AppData\Local\Programs\Python\Python314\Lib\importlib\__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+colorama\tests\initialise_test.py:7: in <module>
+    from ..initialise import init, just_fix_windows_console, _wipe_internal_state_for_tests, reset_all
+E   ImportError: cannot import name 'reset_all' from 'colorama.initialise' (C:\Users\ronal\colorame_rename_testing\colorama\initialise.py)
+=========================== short test summary info ===========================
+ERROR colorama/tests/initialise_test.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+============================== 1 error in 0.97s ===============================
+
+============================================================
+STDERR:

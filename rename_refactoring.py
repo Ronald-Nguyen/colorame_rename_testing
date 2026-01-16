@@ -54,8 +54,8 @@ def get_all_python_files(project_dir: Path) -> str:
                     with open(file_path, 'r', encoding='utf-8') as f:
                         content = f.read()
                     relative_path = file_path.relative_to(project_dir)
-                    code_block += f"\n{'='*60}\nDatei: {relative_path}\n{'='*60}\n"
-                    code_block += content + "\n"
+                    code_block += f"\n\nFile: {relative_path}\n ```python\n"
+                    code_block += content + "```\n"
                 except Exception as e:
                     print(f"Fehler beim Lesen von {file_path}: {e}")
     return code_block
@@ -63,7 +63,7 @@ def get_all_python_files(project_dir: Path) -> str:
 def parse_ai_response(response_text: str) -> dict:
     """Parst die AI-Antwort und extrahiert Dateinamen und Code."""
     files = {}
-    pattern = r"Datei\s+`([^`]+)`:\s*```python\s*(.*?)\s*```"
+    pattern = r"File\s+`([^`]+)`:\s*```python\s*(.*?)\s*```"
     matches = re.findall(pattern, response_text, re.DOTALL)
     for filename, code in matches:
         files[filename] = code.strip()
@@ -168,11 +168,10 @@ def main():
     code_block = get_all_python_files(PROJECT_DIR)
 
     final_prompt = f"{YOUR_PROMPT}\n\nStruktur:\n{project_structure}\n\nCode:\n{code_block}"
-
     successful_iterations = 0
     failed_iterations = 0
 
-    for i in range(1, 11):
+    for i in range(1, 2):
         print(f"\nITERATION {i}/10")
         restore_project(backup_dir, PROJECT_DIR)
 

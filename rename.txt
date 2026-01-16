@@ -1,3 +1,4 @@
+Rename
 Task Description
 
 Your task is to perform a refactoring change in a Python project. A function needs to be renamed.
@@ -12,34 +13,26 @@ Please note:
 6. The semantics and behavior of the code must not change.
 7. Only include files that required changes due to the renaming.
 
-This includes (if applicable):
-- Imports
-- Function calls
-- Type hints
-- Decorators
-- References inside docstrings or comments that explicitly refer to the renamed function
-
-Do not resolve naming conflicts automatically. If a conflict would occur, report it instead.
-
 ---
 
 Examples of renaming tasks:
 
 Example 1:
-
 Original Code:
+File `calculate.py`:
+```python
 def calculate_sum(a, b):
     return a + b
 
 print(calculate_sum(2, 3))
+```
 
 Task:
 1. Rename the function `calculate_sum` to `add`.
 2. Update every relevant occurrence across the entire project.
+3. Output format (for EACH modified file):
 
-Output format (for EACH modified file):
-
-File `filename.py`:
+File `calculate.py`:
 ```python
 def add(a, b):
     return a + b
@@ -48,41 +41,32 @@ print(add(2, 3))
 ```
 
 Example 2:
-
 Original Code:
+File `max.py`:
 def find_maximum(numbers):
-return max(numbers)
+    return max(numbers)
 
 result = find_maximum([1, 2, 3])
 
 Task:
+1. Rename the function find_maximum in the file:  to get_max.
+2. Update every relevant occurrence across the entire project.
+3. Output format (for EACH modified file):
 
-Rename the function find_maximum to get_max.
-
-Update every relevant occurrence across the entire project.
-
-Output format (for EACH modified file):
-
-File filename.py:
+File `max.py`:
 ```python
 def get_max(numbers):
     return max(numbers)
 
 result = get_max([1, 2, 3])
-
 ```
 
 Your Task:
+1. Rename the function reset_all in the file ansitowin32.py to reset_console.
+2. Update every relevant occurrence across the entire project.
+3. For EACH modified file, respond exactly in the following format:
 
-Rename the function reset_all in the file ansitowin32.py to reset_console.
-
-Update every relevant occurrence across the entire project.
-
-Output:
-
-For EACH modified file, respond exactly in the following format:
-
-File filename.py:
+File `filename.py`:
 ```python
 [Complete updated file content]
 ```
