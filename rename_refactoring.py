@@ -156,7 +156,9 @@ def save_results(iteration: int, result_dir: Path, files: dict, test_result: dic
     with open(result_dir / "ai_response.txt", 'w', encoding='utf-8') as f:
         f.write(response_text)
 
-    
+def write_summary(text: str) -> None:
+    with open("summary_results.txt", "w", encoding="utf-8") as f:
+        f.write(text)
 
 
 def main():
@@ -204,10 +206,10 @@ def main():
 
             if test_result['success']:
                 successful_iterations += 1
-                print("Tests bestanden.")
+                write_summary(f"\nIteration {i} erfolgreich.")
             else:
                 failed_iterations += 1
-                print("Tests fehlgeschlagen.")
+                write_summary(f"\nIteration {i} fehlgeschlagen.")
 
             save_results(i, RESULTS_DIR / f"iteration_{i:02d}", files, test_result, response_text)
 
@@ -217,8 +219,7 @@ def main():
 
     print(f"\nFertig. Erfolgsrate: {successful_iterations/ITERATIONEN*100:.1f}%")
     restore_project(backup_dir, PROJECT_DIR)
-    with open("summary_results.txt", "w", encoding="utf-8") as f:
-        f.write(f"\nFertig. Erfolgsrate: {successful_iterations/ITERATIONEN*100:.1f}%")
+    write_summary(f"\nFertig. Erfolgsrate: {successful_iterations/ITERATIONEN*100:.1f}%")
 
 if __name__ == "__main__":
     main()
