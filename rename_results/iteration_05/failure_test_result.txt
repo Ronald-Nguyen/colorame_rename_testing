@@ -1,0 +1,103 @@
+Iteration 5
+Timestamp: 2026-01-18T17:08:20.974200
+Success: False
+
+============================================================
+STDOUT:
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.0.2, pluggy-0.1.dev919+g0f099630a
+benchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+rootdir: C:\Users\ronal\colorame_rename_testing
+configfile: pyproject.toml
+plugins: anyio-4.12.1, hypothesis-6.148.8, benchmark-5.2.3, cov-7.0.0
+collected 53 items
+
+colorama\tests\ansi_test.py ...                                          [  5%]
+colorama\tests\ansitowin32_test.py .......................               [ 49%]
+colorama\tests\initialise_test.py ssssssssssF.                           [ 71%]
+colorama\tests\isatty_test.py .......                                    [ 84%]
+colorama\tests\winterm_test.py ........                                  [100%]
+
+================================== FAILURES ===================================
+_____________ JustFixWindowsConsoleTest.testJustFixWindowsConsole _____________
+
+self = <colorama.tests.initialise_test.JustFixWindowsConsoleTest testMethod=testJustFixWindowsConsole>
+
+    @patch("colorama.ansitowin32.winapi_test", lambda: True)
+    def testJustFixWindowsConsole(self):
+        if sys.platform != "win32":
+            # just_fix_windows_console should be a no-op
+            just_fix_windows_console()
+            self.assertIs(sys.stdout, orig_stdout)
+            self.assertIs(sys.stderr, orig_stderr)
+        else:
+            def fake_std():
+                # Emulate stdout=not a tty, stderr=tty
+                # to check that we handle both cases correctly
+                stdout = Mock()
+                stdout.closed = False
+                stdout.isatty.return_value = False
+                stdout.fileno.return_value = 1
+                sys.stdout = stdout
+    
+                stderr = Mock()
+                stderr.closed = False
+                stderr.isatty.return_value = True
+                stderr.fileno.return_value = 2
+                sys.stderr = stderr
+    
+            for native_ansi in [False, True]:
+                with patch(
+                    'colorama.ansitowin32.enable_vt_processing',
+                    lambda *_: native_ansi
+                ):
+                    self._reset()
+                    fake_std()
+    
+                    # Regular single-call test
+                    prev_stdout = sys.stdout
+                    prev_stderr = sys.stderr
+                    just_fix_windows_console()
+                    self.assertIs(sys.stdout, prev_stdout)
+                    if native_ansi:
+                        self.assertIs(sys.stderr, prev_stderr)
+                    else:
+                        self.assertIsNot(sys.stderr, prev_stderr)
+    
+                    # second call without resetting is always a no-op
+                    prev_stdout = sys.stdout
+                    prev_stderr = sys.stderr
+                    just_fix_windows_console()
+                    self.assertIs(sys.stdout, prev_stdout)
+                    self.assertIs(sys.stderr, prev_stderr)
+    
+                    self._reset()
+                    fake_std()
+    
+                    # If init() runs first, just_fix_windows_console should be a no-op
+>                   init()
+
+colorama\tests\initialise_test.py:176: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+colorama\initialise.py:46: in init
+    wrap_stream(orig_stdout, convert, strip, autoreset, wrap)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+stream = <Mock id='1465959723568'>, convert = None, strip = None
+autoreset = False, wrap = True
+
+    def wrap_stream(stream, convert, strip, autoreset, wrap):
+        if wrap:
+            wrapper = AnsiToWin32(stream,
+                convert=convert, strip=strip, autoreset=autoreset)
+>           if wrapper.should_wrap():
+               ^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'AnsiToWin32' object has no attribute 'should_wrap'
+
+colorama\initialise.py:105: AttributeError
+=========================== short test summary info ===========================
+FAILED colorama/tests/initialise_test.py::JustFixWindowsConsoleTest::testJustFixWindowsConsole
+================== 1 failed, 42 passed, 10 skipped in 0.44s ===================
+
+============================================================
+STDERR:

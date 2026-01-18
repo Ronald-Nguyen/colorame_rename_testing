@@ -1,0 +1,24 @@
+Iteration 9
+Timestamp: 2026-01-18T17:09:33.694819
+Success: True
+
+============================================================
+STDOUT:
+============================= test session starts =============================
+platform win32 -- Python 3.14.2, pytest-9.0.2, pluggy-0.1.dev919+g0f099630a
+benchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+rootdir: C:\Users\ronal\colorame_rename_testing
+configfile: pyproject.toml
+plugins: anyio-4.12.1, hypothesis-6.148.8, benchmark-5.2.3, cov-7.0.0
+collected 53 items
+
+colorama\tests\ansi_test.py ...                                          [  5%]
+colorama\tests\ansitowin32_test.py .......................               [ 49%]
+colorama\tests\initialise_test.py ssssssssss..                           [ 71%]
+colorama\tests\isatty_test.py .......                                    [ 84%]
+colorama\tests\winterm_test.py ........                                  [100%]
+
+======================= 43 passed, 10 skipped in 0.42s ========================
+
+============================================================
+STDERR:

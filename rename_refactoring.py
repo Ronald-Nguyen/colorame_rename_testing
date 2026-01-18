@@ -9,6 +9,7 @@ from google import genai
 
 REFACTORING = 'rename'
 PATH = 'colorama'
+ITERATIONEN = 10
 
 try:
     client = genai.Client()
@@ -54,7 +55,7 @@ def get_all_python_files(project_dir: Path) -> str:
                     with open(file_path, 'r', encoding='utf-8') as f:
                         content = f.read()
                     relative_path = file_path.relative_to(project_dir)
-                    code_block += f"\n\nFile: {relative_path}\n ```python\n"
+                    code_block += f"\n\nFile `{relative_path}`:\n```python\n"
                     code_block += content + "```\n"
                 except Exception as e:
                     print(f"Fehler beim Lesen von {file_path}: {e}")
@@ -170,14 +171,17 @@ def main():
     final_prompt = f"{YOUR_PROMPT}\n\nStruktur:\n{project_structure}\n\nCode:\n{code_block}"
     successful_iterations = 0
     failed_iterations = 0
+    
+    with open("full_prompt.txt", "w", encoding="utf-8") as f:
+        f.write(final_prompt)
 
-    for i in range(1, 2):
-        print(f"\nITERATION {i}/10")
+    for i in range(1, ITERATIONEN+1):
+        print(f"\nITERATION {i}/{ITERATIONEN}")
         restore_project(backup_dir, PROJECT_DIR)
 
         try:
             response = client.models.generate_content(
-                model='gemini-2.5-flash-lite',
+                model='gemini-2.0-flash-lite',
                 contents=final_prompt
             )
             
@@ -210,8 +214,10 @@ def main():
             print(f"Fehler: {e}")
             failed_iterations += 1
 
-    print(f"\nFertig. Erfolgsrate: {successful_iterations/10*100:.1f}%")
+    print(f"\nFertig. Erfolgsrate: {successful_iterations/ITERATIONEN*100:.1f}%")
     restore_project(backup_dir, PROJECT_DIR)
+    with open("summary_results.txt", "w", encoding="utf-8") as f:
+        f.write(f"\nFertig. Erfolgsrate: {successful_iterations/ITERATIONEN*100:.1f}%")
 
 if __name__ == "__main__":
     main()
