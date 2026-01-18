@@ -157,7 +157,7 @@ def save_results(iteration: int, result_dir: Path, files: dict, test_result: dic
         f.write(response_text)
 
 def write_summary(text: str) -> None:
-    with open("summary_results.txt", "w", encoding="utf-8") as f:
+    with open("summary_results.txt", "a", encoding="utf-8") as f:
         f.write(text)
 
 
