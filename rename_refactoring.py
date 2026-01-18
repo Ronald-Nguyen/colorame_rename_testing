@@ -6,24 +6,39 @@ import subprocess
 from pathlib import Path
 from datetime import datetime
 from google import genai
+from groq import Groq
 
 REFACTORING = 'rename'
 PATH = 'colorama'
 ITERATIONEN = 1
 GEMINI = 'gemini-3-pro-preview'
 LLAMA = 'llama-3.3-70b-versatile'
-MODEL = LLAMA
+MODEL_GROQ = LLAMA
+MODEL_GEMINI = GEMINI
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-LLM_API_KEY = GROQ_API_KEY
+LLM_API_KEY = GEMINI_API_KEY
+client = None
+MODEL = None
 
-try:
-    client = genai.Client(api_key=LLM_API_KEY)
-    #client = genai.Client()
-    print("Gemini API Key aus Umgebungsvariable geladen")
-except Exception as e:
-    print(f"Fehler beim Laden des API-Keys: {e}")
-    exit(1)
+if LLM_API_KEY == GROQ_API_KEY:
+    MODEL = MODEL_GROQ
+    try:
+        client = Groq(api_key=LLM_API_KEY)
+        print("Groq API Key aus Umgebungsvariable geladen")
+    except Exception as e:
+        print(f"Fehler beim Laden des API-Keys: {e}")
+        exit(1)
+else:
+    MODEL = MODEL_GEMINI
+    try:
+        client = genai.Client(api_key=LLM_API_KEY)
+        print("Gemini API Key aus Umgebungsvariable geladen")
+    except Exception as e:
+        print(f"Fehler beim Laden des API-Keys: {e}")
+        exit(1)
+
+
 
 parser = argparse.ArgumentParser(description="Projektpfad angeben")
 parser.add_argument("--project-path", type=str, default=PATH, help="Pfad des Projekts")
@@ -166,6 +181,40 @@ def write_summary(text: str) -> None:
     with open("summary_results.txt", "a", encoding="utf-8") as f:
         f.write(text)
 
+def groq_generate(final_prompt: str) -> str:
+    """Fragt Groq (Chat Completions) an und gibt den Text-Content zurück."""
+    # Optional: kurze Systeminstruktion, damit das Output-Format zu parse_ai_response passt
+    system_msg = (
+        "Du bist ein Refactoring-Assistent. Antworte ausschließlich mit Blöcken im Format:\n"
+        "File `<relativer/pfad>`:\n```python\n<Code>\n```\n"
+        "Erzeuge nur die geänderten/neu hinzugefügten Dateien."
+    )
+    resp = client.chat.completions.create(
+        model=MODEL,
+        messages=[
+            {"role": "system", "content": system_msg},
+            {"role": "user", "content": final_prompt},
+        ],
+        temperature=0.2,
+    )
+    return resp.choices[0].message.content
+
+def gemini_generate(final_prompt: str) -> str:
+    """Fragt Gemini (Text Completions) an und gibt den Text-Content zurück."""
+    response = client.models.generate_content(
+        model=MODEL,
+        contents=final_prompt
+    )
+
+    response_text = getattr(response, "text", None)
+    if not response_text and hasattr(response, "candidates"):
+        parts = [p.text for c in response.candidates for p in c.content.parts if hasattr(p, "text")]
+        response_text = "\n".join(parts)
+    
+    if not response_text:
+        raise ValueError("Leere Antwort erhalten")
+    
+    return response_text
 
 def main():
     YOUR_PROMPT = PROMPT_TEMPLATE
@@ -189,18 +238,10 @@ def main():
         restore_project(backup_dir, PROJECT_DIR)
 
         try:
-            response = client.models.generate_content(
-                model=MODEL,
-                contents=final_prompt
-            )
-            
-            response_text = getattr(response, "text", None)
-            if not response_text and hasattr(response, "candidates"):
-                parts = [p.text for c in response.candidates for p in c.content.parts if hasattr(p, "text")]
-                response_text = "\n".join(parts)
-            
-            if not response_text:
-                raise ValueError("Leere Antwort erhalten")
+            if LLM_API_KEY == GROQ_API_KEY:
+                response_text = groq_generate(final_prompt)
+            else:
+                response_text = gemini_generate(final_prompt)
 
             files = parse_ai_response(response_text)
             if not files:

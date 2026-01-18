@@ -1,3 +1,9 @@
 
 Iteration 2 erfolgreich.
 Fertig. Erfolgsrate: 0.0%
+Fertig. Erfolgsrate: 0.0%
+Fertig. Erfolgsrate: 0.0%
+Fertig. Erfolgsrate: 0.0%
+Fertig. Erfolgsrate: 0.0%
+Iteration 1 erfolgreich.
+Fertig. Erfolgsrate: 100.0%
