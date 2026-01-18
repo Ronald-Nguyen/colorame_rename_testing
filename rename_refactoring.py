@@ -10,7 +10,7 @@ from groq import Groq
 
 REFACTORING = 'rename'
 PATH = 'colorama'
-ITERATIONEN = 1
+ITERATIONEN = 10
 GEMINI = 'gemini-3-pro-preview'
 LLAMA = 'llama-3.3-70b-versatile'
 MODEL_GROQ = LLAMA
@@ -222,7 +222,7 @@ def main():
     successful_iterations = 0
     failed_iterations = 0
     
-    with open("full_prompt.txt", "w", encoding="utf-8") as f:
+    with open(RESULTS_DIR / "full_prompt.txt", "w", encoding="utf-8") as f:
         f.write(final_prompt)
 
     for i in range(1, ITERATIONEN+1):
