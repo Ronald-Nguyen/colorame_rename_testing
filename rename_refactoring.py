@@ -1,4 +1,5 @@
 import os
+from pyexpat import model
 import re
 import shutil
 import argparse
@@ -7,17 +8,20 @@ from pathlib import Path
 from datetime import datetime
 from google import genai
 from groq import Groq
+from mistralai import Mistral
 
 REFACTORING = 'rename'
 PATH = 'colorama'
-ITERATIONEN = 10
+ITERATIONS = 10
 GEMINI = 'gemini-3-pro-preview'
 LLAMA = 'llama-3.3-70b-versatile'
+MISTRAL = 'mistral-large-2512'
 MODEL_GROQ = LLAMA
 MODEL_GEMINI = GEMINI
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-LLM_API_KEY = GEMINI_API_KEY
+MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY')
+LLM_API_KEY = MISTRAL_API_KEY
 client = None
 MODEL = None
 
@@ -29,6 +33,14 @@ if LLM_API_KEY == GROQ_API_KEY:
     except Exception as e:
         print(f"Fehler beim Laden des API-Keys: {e}")
         exit(1)
+elif LLM_API_KEY == MISTRAL_API_KEY:
+    MODEL = MISTRAL
+    try:
+        client = Mistral(api_key=LLM_API_KEY)
+        print("Mistral API Key aus Umgebungsvariable geladen")
+    except Exception as e:
+        print(f"Fehler beim Laden des API-Keys: {e}")
+        exit(1)
 else:
     MODEL = MODEL_GEMINI
     try:
@@ -37,6 +49,7 @@ else:
     except Exception as e:
         print(f"Fehler beim Laden des API-Keys: {e}")
         exit(1)
+ 
 
 
 
@@ -182,12 +195,9 @@ def write_summary(text: str) -> None:
         f.write(text)
 
 def groq_generate(final_prompt: str) -> str:
-    """Fragt Groq (Chat Completions) an und gibt den Text-Content zurück."""
     resp = client.chat.completions.create(
         model=MODEL,
-        messages=[
-            {"role": "user", "content": final_prompt},
-        ],
+        content=final_prompt
     )
     return resp.choices[0].message.content
 
@@ -208,6 +218,14 @@ def gemini_generate(final_prompt: str) -> str:
     
     return response_text
 
+def mistral_generate(prompt: str) -> str:
+    res = client.chat.complete(model=MODEL, messages=[
+        {
+            "content": prompt,
+        },
+    ])
+    return res.choices[0].message.content
+
 def main():
     YOUR_PROMPT = PROMPT_TEMPLATE
     print(f"{'='*60}\nStarte Refactoring-Experiment\n{'='*60}\n")
@@ -225,13 +243,15 @@ def main():
     with open(RESULTS_DIR / "full_prompt.txt", "w", encoding="utf-8") as f:
         f.write(final_prompt)
 
-    for i in range(1, ITERATIONEN+1):
-        print(f"\nITERATION {i}/{ITERATIONEN}")
+    for i in range(1, ITERATIONS   +1):
+        print(f"\nITERATION {i}/{ITERATIONS}")
         restore_project(backup_dir, PROJECT_DIR)
 
         try:
             if LLM_API_KEY == GROQ_API_KEY:
                 response_text = groq_generate(final_prompt)
+            elif LLM_API_KEY == MISTRAL_API_KEY:
+                response_text = mistral_generate(final_prompt)
             else:
                 response_text = gemini_generate(final_prompt)
 
@@ -256,9 +276,9 @@ def main():
             print(f"Fehler: {e}")
             failed_iterations += 1
 
-    print(f"\nFertig. Erfolgsrate: {successful_iterations/ITERATIONEN*100:.1f}%")
+    print(f"\nFertig. Erfolgsrate: {successful_iterations/ITERATIONS*100:.1f}%")
     restore_project(backup_dir, PROJECT_DIR)
-    write_summary(f"\nFertig. Erfolgsrate: {successful_iterations/ITERATIONEN*100:.1f}%")
+    write_summary(f"\nFertig. Erfolgsrate: {successful_iterations/ITERATIONS*100:.1f}%")
 
 if __name__ == "__main__":
     main()
