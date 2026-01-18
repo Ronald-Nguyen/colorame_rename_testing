@@ -17,7 +17,7 @@ MODEL_GROQ = LLAMA
 MODEL_GEMINI = GEMINI
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-LLM_API_KEY = GEMINI_API_KEY
+LLM_API_KEY = GROQ_API_KEY
 client = None
 MODEL = None
 
@@ -183,19 +183,11 @@ def write_summary(text: str) -> None:
 
 def groq_generate(final_prompt: str) -> str:
     """Fragt Groq (Chat Completions) an und gibt den Text-Content zurück."""
-    # Optional: kurze Systeminstruktion, damit das Output-Format zu parse_ai_response passt
-    system_msg = (
-        "Du bist ein Refactoring-Assistent. Antworte ausschließlich mit Blöcken im Format:\n"
-        "File `<relativer/pfad>`:\n```python\n<Code>\n```\n"
-        "Erzeuge nur die geänderten/neu hinzugefügten Dateien."
-    )
     resp = client.chat.completions.create(
         model=MODEL,
         messages=[
-            {"role": "system", "content": system_msg},
             {"role": "user", "content": final_prompt},
         ],
-        temperature=0.2,
     )
     return resp.choices[0].message.content
 

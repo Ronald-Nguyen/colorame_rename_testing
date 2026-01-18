@@ -1,3 +1,5 @@
+To rename the `should_wrap()` method in the `ansitowin32.py` file to `is_wrappable()`, you should replace all instances of `should_wrap()` with `is_wrappable()`. Since the `should_wrap()` method is used only within the `ansitowin32.py` file and in the `initialise.py` file for its external interface, you only need to modify these two files. Here's the updated content of the modified files:
+
 File `ansitowin32.py`:
 ```python
 import re
