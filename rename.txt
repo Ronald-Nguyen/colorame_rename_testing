@@ -13,7 +13,7 @@ Please note:
 6. The semantics and behavior of the code must not change.
 7. Only include files that required changes due to the renaming.
 8. Respond with the code blocks only. Your entire response must be machine-readable. Do not include any conversational filler.
-9. Only rename the exact functions provided. Do NOT rename, modify, or 'improve' any other functions, methods, or .
+9. Only rename the exact functions provided. Do NOT rename, modify, or 'improve' any other functions, methods, or variables.
 ---
 
 Examples of renaming tasks:

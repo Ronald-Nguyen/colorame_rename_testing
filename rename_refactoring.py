@@ -267,9 +267,11 @@ def main():
             if test_result['success']:
                 successful_iterations += 1
                 write_summary(f"\nIteration {i} erfolgreich.")
+                print(" Tests bestanden.")
             else:
                 failed_iterations += 1
                 write_summary(f"\nIteration {i} fehlgeschlagen.")
+                print(" Tests fehlgeschlagen.")
 
             save_results(i, RESULTS_DIR / f"iteration_{i:02d}", files, test_result, response_text)
 
