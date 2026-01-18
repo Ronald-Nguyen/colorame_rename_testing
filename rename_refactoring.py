@@ -46,7 +46,7 @@ args = parser.parse_args()
 
 PROJECT_DIR = Path(args.project_path)
 PROMPT_TEMPLATE = Path(f"{REFACTORING}.txt").read_text(encoding='utf-8')
-RESULTS_DIR = Path(REFACTORING + "_results")
+RESULTS_DIR = Path(REFACTORING + "_results_" + MODEL)
 RESULTS_DIR.mkdir(exist_ok=True)
 
 def get_project_structure(project_dir: Path) -> str:
@@ -178,7 +178,7 @@ def save_results(iteration: int, result_dir: Path, files: dict, test_result: dic
         f.write(response_text)
 
 def write_summary(text: str) -> None:
-    with open("summary_results.txt", "a", encoding="utf-8") as f:
+    with open(RESULTS_DIR / f"{MODEL}_summary_results.txt", "a", encoding="utf-8") as f:
         f.write(text)
 
 def groq_generate(final_prompt: str) -> str:
