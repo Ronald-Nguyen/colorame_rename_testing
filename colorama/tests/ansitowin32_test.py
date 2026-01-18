@@ -101,13 +101,13 @@ class AnsiToWin32Test(TestCase):
     def assert_autoresets(self, convert, autoreset=True):
         stream = AnsiToWin32(Mock())
         stream.convert = convert
-        stream.reset_console = Mock()
+        stream.reset_all = Mock()
         stream.autoreset = autoreset
         stream.winterm = Mock()
 
         stream.write('abc')
 
-        self.assertEqual(stream.reset_console.called, autoreset)
+        self.assertEqual(stream.reset_all.called, autoreset)
 
     def testWriteAutoresets(self):
         self.assert_autoresets(convert=True)
@@ -174,7 +174,7 @@ class AnsiToWin32Test(TestCase):
         converter = AnsiToWin32(stream)
         stream.close()
 
-        converter.reset_console()
+        converter.reset_all()
 
     def test_wrap_shouldnt_raise_on_closed_orig_stdout(self):
         stream = StringIO()
@@ -267,7 +267,7 @@ class AnsiToWin32Test(TestCase):
             SetConsoleMode.assert_called_with(1234, ENABLE_VIRTUAL_TERMINAL_PROCESSING)
             self.assertFalse(stream.strip)
             self.assertFalse(stream.convert)
-            self.assertFalse(stream.should_wrap())
+            self.assertFalse(stream.is_wrappable())
 
             # Now let's pretend we're on an old Windows console, that doesn't have
             # native ANSI support.
@@ -279,7 +279,7 @@ class AnsiToWin32Test(TestCase):
             SetConsoleMode.assert_called_with(1234, ENABLE_VIRTUAL_TERMINAL_PROCESSING)
             self.assertTrue(stream.strip)
             self.assertTrue(stream.convert)
-            self.assertTrue(stream.should_wrap())
+            self.assertTrue(stream.is_wrappable())
 
 
 if __name__ == '__main__':
