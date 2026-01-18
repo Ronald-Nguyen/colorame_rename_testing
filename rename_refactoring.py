@@ -219,11 +219,12 @@ def gemini_generate(final_prompt: str) -> str:
     return response_text
 
 def mistral_generate(prompt: str) -> str:
-    res = client.chat.complete(model=MODEL, messages=[
+    res = client.chat.complete(model= MODEL, messages=[
         {
             "content": prompt,
+            "role": "user",
         },
-    ])
+    ], stream=False)
     return res.choices[0].message.content
 
 def main():

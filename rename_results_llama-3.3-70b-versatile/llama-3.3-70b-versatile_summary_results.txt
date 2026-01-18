@@ -10,3 +10,4 @@ Iteration 8 fehlgeschlagen.
 Iteration 9 fehlgeschlagen.
 Fertig. Erfolgsrate: 20.0%
 Fertig. Erfolgsrate: 0.0%
+Fertig. Erfolgsrate: 0.0%
