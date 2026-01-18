@@ -10,6 +10,7 @@ from google import genai
 REFACTORING = 'rename'
 PATH = 'colorama'
 ITERATIONEN = 10
+MODEL = 'gemini-3-pro-preview'
 
 try:
     client = genai.Client()
@@ -181,7 +182,7 @@ def main():
 
         try:
             response = client.models.generate_content(
-                model='gemini-2.0-flash-lite',
+                model=MODEL,
                 contents=final_prompt
             )
             
