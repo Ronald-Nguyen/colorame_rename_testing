@@ -9,11 +9,17 @@ from google import genai
 
 REFACTORING = 'rename'
 PATH = 'colorama'
-ITERATIONEN = 10
-MODEL = 'gemini-3-pro-preview'
+ITERATIONEN = 1
+GEMINI = 'gemini-3-pro-preview'
+LLAMA = 'llama-3.3-70b-versatile'
+MODEL = LLAMA
+GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+LLM_API_KEY = GROQ_API_KEY
 
 try:
-    client = genai.Client()
+    client = genai.Client(api_key=LLM_API_KEY)
+    #client = genai.Client()
     print("Gemini API Key aus Umgebungsvariable geladen")
 except Exception as e:
     print(f"Fehler beim Laden des API-Keys: {e}")
