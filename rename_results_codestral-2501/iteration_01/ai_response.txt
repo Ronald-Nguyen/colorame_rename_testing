@@ -1,0 +1,329 @@
+File `ansitowin32.py`:
+```python
+import re
+import sys
+import os
+
+from .ansi import AnsiFore, AnsiBack, AnsiStyle, Style, BEL
+from .winterm import enable_vt_processing, WinTerm, WinColor, WinStyle
+from .win32 import windll, winapi_test
+
+winterm = None
+if windll is not None:
+    winterm = WinTerm()
+
+class StreamWrapper:
+
+    def __init__(self, wrapped, converter):
+        self.__wrapped = wrapped
+        self.__convertor = converter
+
+    def __getattr__(self, name):
+        return getattr(self.__wrapped, name)
+
+    def __enter__(self, *args, **kwargs):
+        return self.__wrapped.__enter__(*args, **kwargs)
+
+    def __exit__(self, *args, **kwargs):
+        return self.__wrapped.__exit__(*args, **kwargs)
+
+    def __setstate__(self, state):
+        self.__dict__ = state
+
+    def __getstate__(self):
+        return self.__dict__
+
+    def write(self, text):
+        self.__convertor.write(text)
+
+    def isatty(self):
+        stream = self.__wrapped
+        if 'PYCHARM_HOSTED' in os.environ:
+            if stream is not None and (stream is sys.__stdout__ or stream is sys.__stderr__):
+                return True
+        try:
+            stream_isatty = stream.isatty
+        except AttributeError:
+            return False
+        else:
+            return stream_isatty()
+
+    @property
+    def closed(self):
+        stream = self.__wrapped
+        try:
+            return stream.closed
+        except (AttributeError, ValueError):
+            return True
+
+class AnsiToWin32:
+
+    ANSI_CSI_RE = re.compile('\001?\033\\[((?:\\d|;)*)([a-zA-Z])\002?')
+    ANSI_OSC_RE = re.compile('\001?\033\\]([^\a]*)(\a)\002?')
+
+    def __init__(self, wrapped, convert=None, strip=None, autoreset=False):
+        self.wrapped = wrapped
+
+        self.autoreset = autoreset
+
+        self.stream = StreamWrapper(wrapped, self)
+
+        on_windows = os.name == 'nt'
+        conversion_supported = on_windows and winapi_test()
+        try:
+            fd = wrapped.fileno()
+        except Exception:
+            fd = -1
+        system_has_native_ansi = not on_windows or enable_vt_processing(fd)
+        have_tty = not self.stream.closed and self.stream.isatty()
+        need_conversion = conversion_supported and not system_has_native_ansi
+
+        if strip is None:
+            strip = need_conversion or not have_tty
+        self.strip = strip
+
+        if convert is None:
+            convert = need_conversion and have_tty
+        self.convert = convert
+
+        self.win32_calls = self.get_win32_calls()
+
+        self.on_stderr = self.wrapped is sys.stderr
+
+    def is_wrappable(self):
+        return self.convert or self.strip or self.autoreset
+
+    def get_win32_calls(self):
+        if self.convert and winterm:
+            return {
+                AnsiStyle.RESET_ALL: (winterm.reset_all, ),
+                AnsiStyle.BRIGHT: (winterm.style, WinStyle.BRIGHT),
+                AnsiStyle.DIM: (winterm.style, WinStyle.NORMAL),
+                AnsiStyle.NORMAL: (winterm.style, WinStyle.NORMAL),
+                AnsiFore.BLACK: (winterm.fore, WinColor.BLACK),
+                AnsiFore.RED: (winterm.fore, WinColor.RED),
+                AnsiFore.GREEN: (winterm.fore, WinColor.GREEN),
+                AnsiFore.YELLOW: (winterm.fore, WinColor.YELLOW),
+                AnsiFore.BLUE: (winterm.fore, WinColor.BLUE),
+                AnsiFore.MAGENTA: (winterm.fore, WinColor.MAGENTA),
+                AnsiFore.CYAN: (winterm.fore, WinColor.CYAN),
+                AnsiFore.WHITE: (winterm.fore, WinColor.GREY),
+                AnsiFore.RESET: (winterm.fore, ),
+                AnsiFore.LIGHTBLACK_EX: (winterm.fore, WinColor.BLACK, True),
+                AnsiFore.LIGHTRED_EX: (winterm.fore, WinColor.RED, True),
+                AnsiFore.LIGHTGREEN_EX: (winterm.fore, WinColor.GREEN, True),
+                AnsiFore.LIGHTYELLOW_EX: (winterm.fore, WinColor.YELLOW, True),
+                AnsiFore.LIGHTBLUE_EX: (winterm.fore, WinColor.BLUE, True),
+                AnsiFore.LIGHTMAGENTA_EX: (winterm.fore, WinColor.MAGENTA, True),
+                AnsiFore.LIGHTCYAN_EX: (winterm.fore, WinColor.CYAN, True),
+                AnsiFore.LIGHTWHITE_EX: (winterm.fore, WinColor.GREY, True),
+                AnsiBack.BLACK: (winterm.back, WinColor.BLACK),
+                AnsiBack.RED: (winterm.back, WinColor.RED),
+                AnsiBack.GREEN: (winterm.back, WinColor.GREEN),
+                AnsiBack.YELLOW: (winterm.back, WinColor.YELLOW),
+                AnsiBack.BLUE: (winterm.back, WinColor.BLUE),
+                AnsiBack.MAGENTA: (winterm.back, WinColor.MAGENTA),
+                AnsiBack.CYAN: (winterm.back, WinColor.CYAN),
+                AnsiBack.WHITE: (winterm.back, WinColor.GREY),
+                AnsiBack.RESET: (winterm.back, ),
+                AnsiBack.LIGHTBLACK_EX: (winterm.back, WinColor.BLACK, True),
+                AnsiBack.LIGHTRED_EX: (winterm.back, WinColor.RED, True),
+                AnsiBack.LIGHTGREEN_EX: (winterm.back, WinColor.GREEN, True),
+                AnsiBack.LIGHTYELLOW_EX: (winterm.back, WinColor.YELLOW, True),
+                AnsiBack.LIGHTBLUE_EX: (winterm.back, WinColor.BLUE, True),
+                AnsiBack.LIGHTMAGENTA_EX: (winterm.back, WinColor.MAGENTA, True),
+                AnsiBack.LIGHTCYAN_EX: (winterm.back, WinColor.CYAN, True),
+                AnsiBack.LIGHTWHITE_EX: (winterm.back, WinColor.GREY, True),
+            }
+        return dict()
+
+    def write(self, text):
+        if self.strip or self.convert:
+            self.write_and_convert(text)
+        else:
+            self.wrapped.write(text)
+            self.wrapped.flush()
+        if self.autoreset:
+            self.reset_all()
+
+    def reset_all(self):
+        if self.convert:
+            self.call_win32('m', (0,))
+        elif not self.strip and not self.stream.closed:
+            self.wrapped.write(Style.RESET_ALL)
+
+    def write_and_convert(self, text):
+        cursor = 0
+        text = self.convert_osc(text)
+        for match in self.ANSI_CSI_RE.finditer(text):
+            start, end = match.span()
+            self.write_plain_text(text, cursor, start)
+            self.convert_ansi(*match.groups())
+            cursor = end
+        self.write_plain_text(text, cursor, len(text))
+
+    def write_plain_text(self, text, start, end):
+        if start < end:
+            self.wrapped.write(text[start:end])
+            self.wrapped.flush()
+
+    def convert_ansi(self, paramstring, command):
+        if self.convert:
+            params = self.extract_params(command, paramstring)
+            self.call_win32(command, params)
+
+    def extract_params(self, command, paramstring):
+        if command in 'Hf':
+            params = tuple(int(p) if len(p) != 0 else 1 for p in paramstring.split(';'))
+            while len(params) < 2:
+                params = params + (1,)
+        else:
+            params = tuple(int(p) for p in paramstring.split(';') if len(p) != 0)
+            if len(params) == 0:
+                if command in 'JKm':
+                    params = (0,)
+                elif command in 'ABCD':
+                    params = (1,)
+
+        return params
+
+    def call_win32(self, command, params):
+        if command == 'm':
+            for param in params:
+                if param in self.win32_calls:
+                    func_args = self.win32_calls[param]
+                    func = func_args[0]
+                    args = func_args[1:]
+                    kwargs = dict(on_stderr=self.on_stderr)
+                    func(*args, **kwargs)
+        elif command in 'J':
+            winterm.erase_screen(params[0], on_stderr=self.on_stderr)
+        elif command in 'K':
+            winterm.erase_line(params[0], on_stderr=self.on_stderr)
+        elif command in 'Hf':
+            winterm.set_cursor_position(params, on_stderr=self.on_stderr)
+        elif command in 'ABCD':
+            n = params[0]
+            x, y = {'A': (0, -n), 'B': (0, n), 'C': (n, 0), 'D': (-n, 0)}[command]
+            winterm.cursor_adjust(x, y, on_stderr=self.on_stderr)
+
+    def convert_osc(self, text):
+        for match in self.ANSI_OSC_RE.finditer(text):
+            start, end = match.span()
+            text = text[:start] + text[end:]
+            paramstring, command = match.groups()
+            if command == BEL:
+                if paramstring.count(";") == 1:
+                    params = paramstring.split(";")
+                    if params[0] in '02':
+                        winterm.set_title(params[1])
+        return text
+
+    def flush(self):
+        self.wrapped.flush()
+```
+
+File `initialise.py`:
+```python
+import atexit
+import contextlib
+import sys
+
+from .ansitowin32 import AnsiToWin32
+
+def _wipe_internal_state_for_tests():
+    global orig_stdout, orig_stderr
+    orig_stdout = None
+    orig_stderr = None
+
+    global wrapped_stdout, wrapped_stderr
+    wrapped_stdout = None
+    wrapped_stderr = None
+
+    global atexit_done
+    atexit_done = False
+
+    global fixed_windows_console
+    fixed_windows_console = False
+
+    atexit.unregister(reset_all)
+
+def reset_all():
+    if AnsiToWin32 is not None:
+        AnsiToWin32(orig_stdout).reset_all()
+
+def init(autoreset=False, convert=None, strip=None, wrap=True):
+    if not wrap and any([autoreset, convert, strip]):
+        raise ValueError('wrap=False conflicts with any other arg=True')
+
+    global wrapped_stdout, wrapped_stderr
+    global orig_stdout, orig_stderr
+
+    orig_stdout = sys.stdout
+    orig_stderr = sys.stderr
+
+    if sys.stdout is None:
+        wrapped_stdout = None
+    else:
+        sys.stdout = wrapped_stdout = \
+            wrap_stream(orig_stdout, convert, strip, autoreset, wrap)
+    if sys.stderr is None:
+        wrapped_stderr = None
+    else:
+        sys.stderr = wrapped_stderr = \
+            wrap_stream(orig_stderr, convert, strip, autoreset, wrap)
+
+    global atexit_done
+    if not atexit_done:
+        atexit.register(reset_all)
+        atexit_done = True
+
+def deinit():
+    if orig_stdout is not None:
+        sys.stdout = orig_stdout
+    if orig_stderr is not None:
+        sys.stderr = orig_stderr
+
+def just_fix_windows_console():
+    global fixed_windows_console
+
+    if sys.platform != "win32":
+        return
+    if fixed_windows_console:
+        return
+    if wrapped_stdout is not None or wrapped_stderr is not None:
+        return
+
+    new_stdout = AnsiToWin32(sys.stdout, convert=None, strip=None, autoreset=False)
+    if new_stdout.convert:
+        sys.stdout = new_stdout
+    new_stderr = AnsiToWin32(sys.stderr, convert=None, strip=None, autoreset=False)
+    if new_stderr.convert:
+        sys.stderr = new_stderr
+
+    fixed_windows_console = True
+
+@contextlib.contextmanager
+def colorama_text(*args, **kwargs):
+    init(*args, **kwargs)
+    try:
+        yield
+    finally:
+        deinit()
+
+def reinit():
+    if wrapped_stdout is not None:
+        sys.stdout = wrapped_stdout
+    if wrapped_stderr is not None:
+        sys.stderr = wrapped_stderr
+
+def wrap_stream(stream, convert, strip, autoreset, wrap):
+    if wrap:
+        wrapper = AnsiToWin32(stream,
+            convert=convert, strip=strip, autoreset=autoreset)
+        if wrapper.is_wrappable():
+            stream = wrapper.stream
+    return stream
+
+_wipe_internal_state_for_tests()
+```
