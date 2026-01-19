@@ -1,5 +1,5 @@
 Iteration 1
-Timestamp: 2026-01-19T00:59:41.949811
+Timestamp: 2026-01-19T01:04:14.352813
 Success: False
 
 ============================================================
@@ -59,12 +59,12 @@ self = <colorama.tests.initialise_test.JustFixWindowsConsoleTest testMethod=test
                     prev_stderr = sys.stderr
                     just_fix_windows_console()
 >                   self.assertIs(sys.stdout, prev_stdout)
-E                   AssertionError: <colorama.ansitowin32.AnsiToWin32 object at 0x000002A17067FA10> is not <Mock id='2892398718864'>
+E                   AssertionError: <colorama.ansitowin32.AnsiToWin32 object at 0x0000018E3412FA10> is not <Mock id='1710270508944'>
 
 colorama\tests\initialise_test.py:159: AssertionError
 =========================== short test summary info ===========================
 FAILED colorama/tests/initialise_test.py::JustFixWindowsConsoleTest::testJustFixWindowsConsole
-================== 1 failed, 42 passed, 10 skipped in 0.75s ===================
+================== 1 failed, 42 passed, 10 skipped in 0.58s ===================
 
 ============================================================
 STDERR:

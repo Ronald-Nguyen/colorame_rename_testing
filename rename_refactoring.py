@@ -16,6 +16,7 @@ ITERATIONS = 1
 GEMINI = 'gemini-3-pro-preview'
 LLAMA = 'llama-3.3-70b-versatile'
 MISTRAL = 'mistral-large-2512'
+DEVSTRAL = 'devstral-2512'
 MODEL_GROQ = LLAMA
 MODEL_GEMINI = GEMINI
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
@@ -34,7 +35,7 @@ if LLM_API_KEY == GROQ_API_KEY:
         print(f"Fehler beim Laden des API-Keys: {e}")
         exit(1)
 elif LLM_API_KEY == MISTRAL_API_KEY:
-    MODEL = MISTRAL
+    MODEL = DEVSTRAL
     try:
         client = Mistral(api_key=LLM_API_KEY)
         print("Mistral API Key aus Umgebungsvariable geladen")
