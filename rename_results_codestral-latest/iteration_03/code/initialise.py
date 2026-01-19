@@ -4,6 +4,7 @@ import sys
 
 from .ansitowin32 import AnsiToWin32
 
+
 def _wipe_internal_state_for_tests():
     global orig_stdout, orig_stderr
     orig_stdout = None
@@ -21,9 +22,11 @@ def _wipe_internal_state_for_tests():
 
     atexit.unregister(reset_all)
 
+
 def reset_all():
     if AnsiToWin32 is not None:
         AnsiToWin32(orig_stdout).reset_all()
+
 
 def init(autoreset=False, convert=None, strip=None, wrap=True):
 
@@ -52,11 +55,13 @@ def init(autoreset=False, convert=None, strip=None, wrap=True):
         atexit.register(reset_all)
         atexit_done = True
 
+
 def deinit():
     if orig_stdout is not None:
         sys.stdout = orig_stdout
     if orig_stderr is not None:
         sys.stderr = orig_stderr
+
 
 def just_fix_windows_console():
     global fixed_windows_console
@@ -69,10 +74,10 @@ def just_fix_windows_console():
         return
 
     new_stdout = AnsiToWin32(sys.stdout, convert=None, strip=None, autoreset=False)
-    if new_stdout.convert:
+    if new_stdout.is_wrappable():
         sys.stdout = new_stdout
     new_stderr = AnsiToWin32(sys.stderr, convert=None, strip=None, autoreset=False)
-    if new_stderr.convert:
+    if new_stderr.is_wrappable():
         sys.stderr = new_stderr
 
     fixed_windows_console = True
@@ -85,11 +90,13 @@ def colorama_text(*args, **kwargs):
     finally:
         deinit()
 
+
 def reinit():
     if wrapped_stdout is not None:
         sys.stdout = wrapped_stdout
     if wrapped_stderr is not None:
         sys.stderr = wrapped_stderr
+
 
 def wrap_stream(stream, convert, strip, autoreset, wrap):
     if wrap:
@@ -98,5 +105,6 @@ def wrap_stream(stream, convert, strip, autoreset, wrap):
         if wrapper.is_wrappable():
             stream = wrapper.stream
     return stream
+
 
 _wipe_internal_state_for_tests()

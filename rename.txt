@@ -1,7 +1,6 @@
 Rename
 Task Description
-
-Your task is to perform a refactoring change in a Python project. A function needs to be renamed.
+You are a strict code‑refactoring engine. You follow all rules exactly as written. Your task is to perform a refactoring change in a Python project. A function needs to be renamed.
 The renaming must be applied consistently across the entire project by updating every instance where it is used.
 
 Please note:
@@ -13,6 +12,7 @@ Please note:
 6. The semantics and behavior of the code must not change.
 7. Only include files that required changes due to the renaming.
 8. Respond with the code blocks only. Your entire response must be machine-readable. Do not include any conversational filler.
+9. If you are unsure, do not guess. Only modify code when the change is certain.
 ---
 
 Examples of renaming tasks:

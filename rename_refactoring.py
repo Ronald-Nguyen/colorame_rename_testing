@@ -233,8 +233,7 @@ def mistral_generate(prompt: str) -> str:
                 "role": "user",
             },
         ],
-        temperature=0.8,
-        top_p=0.95,     
+        temperature=0.2,
         stream=False
     )
     return res.choices[0].message.content

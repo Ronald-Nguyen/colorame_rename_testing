@@ -1,5 +1,5 @@
 Iteration 1
-Timestamp: 2026-01-19T12:32:42.573358
+Timestamp: 2026-01-19T12:46:30.293494
 Success: False
 
 ============================================================
@@ -58,46 +58,13 @@ self = <colorama.tests.initialise_test.JustFixWindowsConsoleTest testMethod=test
                     prev_stdout = sys.stdout
                     prev_stderr = sys.stderr
                     just_fix_windows_console()
-                    self.assertIs(sys.stdout, prev_stdout)
-                    if native_ansi:
-                        self.assertIs(sys.stderr, prev_stderr)
-                    else:
-                        self.assertIsNot(sys.stderr, prev_stderr)
-    
-                    # second call without resetting is always a no-op
-                    prev_stdout = sys.stdout
-                    prev_stderr = sys.stderr
-                    just_fix_windows_console()
-                    self.assertIs(sys.stdout, prev_stdout)
-                    self.assertIs(sys.stderr, prev_stderr)
-    
-                    self._reset()
-                    fake_std()
-    
-                    # If init() runs first, just_fix_windows_console should be a no-op
->                   init()
+>                   self.assertIs(sys.stdout, prev_stdout)
+E                   AssertionError: <colorama.ansitowin32.AnsiToWin32 object at 0x0000016F4218B8B0> is not <Mock id='1577361797008'>
 
-colorama\tests\initialise_test.py:176: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-colorama\initialise.py:46: in init
-    wrap_stream(orig_stdout, convert, strip, autoreset, wrap)
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-
-stream = <Mock id='2055392130928'>, convert = None, strip = None
-autoreset = False, wrap = True
-
-    def wrap_stream(stream, convert, strip, autoreset, wrap):
-        if wrap:
-            wrapper = AnsiToWin32(stream,
-                convert=convert, strip=strip, autoreset=autoreset)
->           if wrapper.should_wrap():
-               ^^^^^^^^^^^^^^^^^^^
-E           AttributeError: 'AnsiToWin32' object has no attribute 'should_wrap'
-
-colorama\initialise.py:105: AttributeError
+colorama\tests\initialise_test.py:159: AssertionError
 =========================== short test summary info ===========================
 FAILED colorama/tests/initialise_test.py::JustFixWindowsConsoleTest::testJustFixWindowsConsole
-================== 1 failed, 42 passed, 10 skipped in 0.58s ===================
+================== 1 failed, 42 passed, 10 skipped in 0.57s ===================
 
 ============================================================
 STDERR:

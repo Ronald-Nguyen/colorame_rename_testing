@@ -89,6 +89,7 @@ class AnsiToWin32:
         self.on_stderr = self.wrapped is sys.stderr
 
     def is_wrappable(self):
+
         return self.convert or self.strip or self.autoreset
 
     def get_win32_calls(self):
@@ -151,6 +152,7 @@ class AnsiToWin32:
             self.wrapped.write(Style.RESET_ALL)
 
     def write_and_convert(self, text):
+
         cursor = 0
         text = self.convert_osc(text)
         for match in self.ANSI_CSI_RE.finditer(text):
