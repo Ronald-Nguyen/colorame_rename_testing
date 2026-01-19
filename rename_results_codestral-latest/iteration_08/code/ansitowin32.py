@@ -6,11 +6,9 @@ from .ansi import AnsiFore, AnsiBack, AnsiStyle, Style, BEL
 from .winterm import enable_vt_processing, WinTerm, WinColor, WinStyle
 from .win32 import windll, winapi_test
 
-
 winterm = None
 if windll is not None:
     winterm = WinTerm()
-
 
 class StreamWrapper:
 
@@ -56,7 +54,6 @@ class StreamWrapper:
         except (AttributeError, ValueError):
             return True
 
-
 class AnsiToWin32:
 
     ANSI_CSI_RE = re.compile('\001?\033\\[((?:\\d|;)*)([a-zA-Z])\002?')
@@ -92,7 +89,6 @@ class AnsiToWin32:
         self.on_stderr = self.wrapped is sys.stderr
 
     def is_wrappable(self):
-
         return self.convert or self.strip or self.autoreset
 
     def get_win32_calls(self):
@@ -148,13 +144,11 @@ class AnsiToWin32:
         if self.autoreset:
             self.reset_all()
 
-
     def reset_all(self):
         if self.convert:
             self.call_win32('m', (0,))
         elif not self.strip and not self.stream.closed:
             self.wrapped.write(Style.RESET_ALL)
-
 
     def write_and_convert(self, text):
 
@@ -167,18 +161,15 @@ class AnsiToWin32:
             cursor = end
         self.write_plain_text(text, cursor, len(text))
 
-
     def write_plain_text(self, text, start, end):
         if start < end:
             self.wrapped.write(text[start:end])
             self.wrapped.flush()
 
-
     def convert_ansi(self, paramstring, command):
         if self.convert:
             params = self.extract_params(command, paramstring)
             self.call_win32(command, params)
-
 
     def extract_params(self, command, paramstring):
         if command in 'Hf':
@@ -194,7 +185,6 @@ class AnsiToWin32:
                     params = (1,)
 
         return params
-
 
     def call_win32(self, command, params):
         if command == 'm':
@@ -216,7 +206,6 @@ class AnsiToWin32:
             x, y = {'A': (0, -n), 'B': (0, n), 'C': (n, 0), 'D': (-n, 0)}[command]
             winterm.cursor_adjust(x, y, on_stderr=self.on_stderr)
 
-
     def convert_osc(self, text):
         for match in self.ANSI_OSC_RE.finditer(text):
             start, end = match.span()
@@ -228,7 +217,6 @@ class AnsiToWin32:
                     if params[0] in '02':
                         winterm.set_title(params[1])
         return text
-
 
     def flush(self):
         self.wrapped.flush()

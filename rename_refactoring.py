@@ -14,7 +14,7 @@ from ollama import ChatResponse, chat
 
 REFACTORING = 'rename'
 PATH = 'colorama'
-ITERATIONS = 1
+ITERATIONS = 10
 GEMINI = 'gemini-3-pro-preview'
 LLAMA = 'llama-3.3-70b-versatile'
 MISTRAL = 'mistral-large-2512'
@@ -225,13 +225,20 @@ def gemini_generate(final_prompt: str) -> str:
     return response_text
 
 def mistral_generate(prompt: str) -> str:
-    res = client.chat.complete(model= MODEL, messages=[
-        {
-            "content": prompt,
-            "role": "user",
-        },
-    ], stream=False)
+    res = client.chat.complete(
+        model=MODEL,
+        messages=[
+            {
+                "content": prompt,
+                "role": "user",
+            },
+        ],
+        temperature=0.8,
+        top_p=0.95,     
+        stream=False
+    )
     return res.choices[0].message.content
+
 
 def ollama_generate(final_prompt: str) -> str:
     response: ChatResponse = chat(model='qwen2.5-coder:7b', messages=[

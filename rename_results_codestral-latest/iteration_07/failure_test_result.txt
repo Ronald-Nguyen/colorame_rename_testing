@@ -1,5 +1,5 @@
 Iteration 7
-Timestamp: 2026-01-19T12:14:09.134627
+Timestamp: 2026-01-19T12:30:56.436006
 Success: False
 
 ============================================================
@@ -83,7 +83,7 @@ colorama\initialise.py:46: in init
     wrap_stream(orig_stdout, convert, strip, autoreset, wrap)
 _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-stream = <Mock id='1999651075952'>, convert = None, strip = None
+stream = <Mock id='1725644846960'>, convert = None, strip = None
 autoreset = False, wrap = True
 
     def wrap_stream(stream, convert, strip, autoreset, wrap):
@@ -97,7 +97,7 @@ E           AttributeError: 'AnsiToWin32' object has no attribute 'should_wrap'
 colorama\initialise.py:105: AttributeError
 =========================== short test summary info ===========================
 FAILED colorama/tests/initialise_test.py::JustFixWindowsConsoleTest::testJustFixWindowsConsole
-================== 1 failed, 42 passed, 10 skipped in 0.61s ===================
+================== 1 failed, 42 passed, 10 skipped in 0.53s ===================
 
 ============================================================
 STDERR:
