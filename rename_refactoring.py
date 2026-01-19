@@ -6,9 +6,11 @@ import argparse
 import subprocess
 from pathlib import Path
 from datetime import datetime
+from unittest import result
 from google import genai
 from groq import Groq
 from mistralai import Mistral
+from ollama import ChatResponse, chat
 
 REFACTORING = 'rename'
 PATH = 'colorama'
@@ -16,9 +18,11 @@ ITERATIONS = 1
 GEMINI = 'gemini-3-pro-preview'
 LLAMA = 'llama-3.3-70b-versatile'
 MISTRAL = 'mistral-large-2512'
-DEVSTRAL = 'devstral-2512'
+CODESTRAL = 'codestral-latest'
+MODEL_OLLAMA = 'devstral-2_123b-cloud'
 MODEL_GROQ = LLAMA
 MODEL_GEMINI = GEMINI
+MODEL_MISTRAL = CODESTRAL
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY')
@@ -35,14 +39,14 @@ if LLM_API_KEY == GROQ_API_KEY:
         print(f"Fehler beim Laden des API-Keys: {e}")
         exit(1)
 elif LLM_API_KEY == MISTRAL_API_KEY:
-    MODEL = DEVSTRAL
+    MODEL = MODEL_MISTRAL
     try:
         client = Mistral(api_key=LLM_API_KEY)
         print("Mistral API Key aus Umgebungsvariable geladen")
     except Exception as e:
         print(f"Fehler beim Laden des API-Keys: {e}")
         exit(1)
-else:
+elif LLM_API_KEY == GEMINI_API_KEY:
     MODEL = MODEL_GEMINI
     try:
         client = genai.Client(api_key=LLM_API_KEY)
@@ -50,7 +54,8 @@ else:
     except Exception as e:
         print(f"Fehler beim Laden des API-Keys: {e}")
         exit(1)
- 
+else:
+    MODEL = MODEL_OLLAMA
 
 
 
@@ -228,6 +233,15 @@ def mistral_generate(prompt: str) -> str:
     ], stream=False)
     return res.choices[0].message.content
 
+def ollama_generate(final_prompt: str) -> str:
+    response: ChatResponse = chat(model='qwen2.5-coder:7b', messages=[
+    {
+        'role': 'user',
+        'content': final_prompt,
+    },
+    ])
+    return response.message.content
+
 def main():
     YOUR_PROMPT = PROMPT_TEMPLATE
     print(f"{'='*60}\nStarte Refactoring-Experiment\n{'='*60}\n")
@@ -254,8 +268,10 @@ def main():
                 response_text = groq_generate(final_prompt)
             elif LLM_API_KEY == MISTRAL_API_KEY:
                 response_text = mistral_generate(final_prompt)
-            else:
+            elif LLM_API_KEY == GEMINI_API_KEY:
                 response_text = gemini_generate(final_prompt)
+            else:
+                response_text = ollama_generate(final_prompt)
 
             files = parse_ai_response(response_text)
             if not files:

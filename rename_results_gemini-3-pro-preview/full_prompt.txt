@@ -12,7 +12,8 @@ Please note:
 5. For every modified file, return the complete updated file content to ensure that no changes are overlooked.
 6. The semantics and behavior of the code must not change.
 7. Only include files that required changes due to the renaming.
-
+8. Respond with the code blocks only. Your entire response must be machine-readable. Do not include any conversational filler.
+9. Only rename the exact functions provided. Do NOT rename, modify, or 'improve' any other functions, methods, or variables.
 ---
 
 Examples of renaming tasks:
@@ -28,7 +29,7 @@ print(calculate_sum(2, 3))
 ```
 
 Task:
-1. Rename the method `calculate_sum` to `add`.
+1. Rename the method `calculate_sum` in the file: `calculate.py` to `add`.
 2. Update every relevant occurrence across the entire project.
 3. Output format (for EACH modified file):
 
@@ -49,7 +50,7 @@ def find_maximum(numbers):
 result = find_maximum([1, 2, 3])
 
 Task:
-1. Rename the method find_maximum in the file:  to get_max.
+1. Rename the method `find_maximum` in the file: `max.py` to `get_max`.
 2. Update every relevant occurrence across the entire project.
 3. Output format (for EACH modified file):
 
@@ -62,7 +63,7 @@ result = get_max([1, 2, 3])
 ```
 
 Your Task:
-1. Rename the method should_wrap() in the file ansitowin32.py to is_wrappable().
+1. Rename the method `should_wrap` in the file: `ansitowin32.py` to `is_wrappable`
 2. Update every relevant occurrence across the entire project.
 3. For EACH modified file, respond exactly in the following format:
 

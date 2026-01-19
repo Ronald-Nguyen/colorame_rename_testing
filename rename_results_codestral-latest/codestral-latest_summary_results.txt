@@ -1,0 +1,15 @@
+
+Iteration 1 fehlgeschlagen.
+Iteration 2 fehlgeschlagen.
+Iteration 3 fehlgeschlagen.
+Iteration 4 fehlgeschlagen.
+Iteration 5 fehlgeschlagen.
+Iteration 6 fehlgeschlagen.
+Iteration 7 fehlgeschlagen.
+Iteration 8 fehlgeschlagen.
+Iteration 9 fehlgeschlagen.
+Iteration 10 fehlgeschlagen.
+Fertig. Erfolgsrate: 0.0%
+Iteration 1 fehlgeschlagen.
+Iteration 1 fehlgeschlagen.
+Fertig. Erfolgsrate: 0.0%
