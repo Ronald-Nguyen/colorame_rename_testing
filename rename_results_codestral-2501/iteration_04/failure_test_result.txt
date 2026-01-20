@@ -1,11 +1,11 @@
 Iteration 4
-Timestamp: 2026-01-19T12:55:30.448046
+Timestamp: 2026-01-20T18:28:57.411670
 Success: False
 
 ============================================================
 STDOUT:
 ============================= test session starts =============================
-platform win32 -- Python 3.14.2, pytest-9.0.2, pluggy-0.1.dev929+g6897ff104
+platform win32 -- Python 3.14.2, pytest-9.0.2, pluggy-0.1.dev918+gfc4045693
 benchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
 rootdir: C:\Users\ronal\colorame_rename_testing
 configfile: pyproject.toml
@@ -59,7 +59,7 @@ self = <colorama.tests.initialise_test.JustFixWindowsConsoleTest testMethod=test
                     prev_stderr = sys.stderr
                     just_fix_windows_console()
 >                   self.assertIs(sys.stdout, prev_stdout)
-E                   AssertionError: <colorama.ansitowin32.AnsiToWin32 object at 0x0000018F522B38B0> is not <Mock id='1715070414736'>
+E                   AssertionError: <colorama.ansitowin32.AnsiToWin32 object at 0x000001D3F630B8B0> is not <Mock id='2009879998352'>
 
 colorama\tests\initialise_test.py:159: AssertionError
 =========================== short test summary info ===========================

@@ -68,10 +68,10 @@ def just_fix_windows_console():
         return
 
     new_stdout = AnsiToWin32(sys.stdout, convert=None, strip=None, autoreset=False)
-    if new_stdout.is_wrappable():
+    if new_stdout.convert:
         sys.stdout = new_stdout
     new_stderr = AnsiToWin32(sys.stderr, convert=None, strip=None, autoreset=False)
-    if new_stderr.is_wrappable():
+    if new_stderr.convert:
         sys.stderr = new_stderr
 
     fixed_windows_console = True

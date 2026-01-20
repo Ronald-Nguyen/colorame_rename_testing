@@ -1,11 +1,11 @@
 Iteration 10
-Timestamp: 2026-01-19T12:57:46.475646
+Timestamp: 2026-01-20T18:29:55.958999
 Success: True
 
 ============================================================
 STDOUT:
 ============================= test session starts =============================
-platform win32 -- Python 3.14.2, pytest-9.0.2, pluggy-0.1.dev929+g6897ff104
+platform win32 -- Python 3.14.2, pytest-9.0.2, pluggy-0.1.dev918+gfc4045693
 benchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
 rootdir: C:\Users\ronal\colorame_rename_testing
 configfile: pyproject.toml
@@ -18,7 +18,7 @@ colorama\tests\initialise_test.py ssssssssss..                           [ 71%]
 colorama\tests\isatty_test.py .......                                    [ 84%]
 colorama\tests\winterm_test.py ........                                  [100%]
 
-======================= 43 passed, 10 skipped in 0.41s ========================
+======================= 43 passed, 10 skipped in 0.47s ========================
 
 ============================================================
 STDERR:
